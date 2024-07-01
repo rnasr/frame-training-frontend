@@ -1,5 +1,5 @@
 import {authApi} from "../api/auth.js";
-import jwtDecode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 export class AuthenticationStore {
     authentication = null;
@@ -15,9 +15,10 @@ export class AuthenticationStore {
             );
         }
     }
-    async signIn(username, password) {
-        let result = await authApi.login(username, password);
+    async signIn(username, passkey) {
+        let result = await authApi.login(username, passkey);
         let claims = jwtDecode(result.jwtToken);
+        console.log("Claims:", claims);
         this.authentication = new Authentication(
             
             claims.username, claims.firstName, claims.lastName, claims.clientName, parseInt(claims.clientId),
