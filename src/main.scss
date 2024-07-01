@@ -1,0 +1,21 @@
+// logo colors from line of dots below 'associates', left to right:
+
+$uranian-blue: #B3D3F4ff;
+$light-sky-blue: #DFDFFFff;
+$air-superiority-blue: #69A1C4ff;
+$indigo-dye: #0F527Fff;
+$prussian-blue: #0B354Eff;
+
+$primary: $uranian-blue;
+$secondary: $air-superiority-blue;
+$tertiary: $light-sky-blue;
+$info: $indigo-dye;
+$light: #F5FFF5;
+$nav-underline-link-active-color: $indigo-dye;
+
+$border-radius: 0.35rem;
+$border-radius-lg: 1rem;
+$border-radius-sm: 0.2rem;
+
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
