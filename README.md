@@ -1,8 +1,9 @@
-# React + Vite
+# Frame Traing Site Repo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a repo for the training component of the Frame LMS.
 
-Currently, two official plugins are available:
+The main project repository can be found here:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[frame-admin-frontend](https://github.com/CodeRad/frame-admin-frontend)
+
+All issues and documentation related to this site can be found there.
