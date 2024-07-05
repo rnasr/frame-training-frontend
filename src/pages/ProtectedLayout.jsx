@@ -1,24 +1,44 @@
 import React from "react";
-import {Container, Card, Col, Row, Image} from "react-bootstrap";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Container, Col, Row, Image } from "react-bootstrap";
+import rootStore from "../stores/rootStore.js";
 
-export default function ProtectedLayout(props){
+export default function ProtectedLayout() {
+    const authStore = rootStore.authenticationStore;
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        authStore.logout();
+        navigate("/login");
+    };
 
     return (
-        <Container fluid className="bg-secondary">
-            <Row className="vh-100 d-flex justify-content-center align-items-center">
-                <Col md={8} lg={6} xs={12}>
-                    <Card className="shadow rounded-3 bg-light">
-                        <Card.Body>
-                            <Row>
-                                <Col className="d-flex justify-content-center align-items-center p-6">
-                                    <Image src="frame-logo.png" fluid alt="Frame & Associates" className='w-50'/> 
-                                </Col>
-                                <Col xs={6} className="d-flex justify-content-center align-items-center my-5 me-5">
-                                    {props.children}
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
+        <Container fluid className="d-flex flex-column vh-100 bg-white">
+            <Row className="d-flex justify-content-between align-items-center m-3">
+                <Col className="d-flex justify-content-start">
+                    <Image src="/frame-logo.png" height={60} alt="Client Logo" />
+                </Col>
+                <Col className="d-flex justify-content-end">
+                    <Link to="/login" onClick={handleLogout} className="text-primary">
+                        Logout
+                    </Link>
+                </Col>
+            </Row>
+            <Row className="d-flex justify-content-center align-items-center pb-5 flex-grow-1">
+                <Col md={8} lg={6} xs={12} className="d-flex justify-content-center align-items-center">
+                    <div className="shadow rounded-3 bg-light p-5">
+                        <Outlet />
+                    </div>
+                </Col>
+            </Row>
+            <Row className="bg-white text-center py-2">
+                <Col>
+                    <small className="text-muted">
+                        &copy; 2002-2024{" "}
+                        <a href="https://www.frameassociates.com/" target="_blank" rel="noopener noreferrer">
+                            Frame and Associates Consulting Inc.
+                        </a>
+                    </small>
                 </Col>
             </Row>
         </Container>
