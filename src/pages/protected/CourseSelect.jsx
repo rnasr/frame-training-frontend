@@ -12,7 +12,7 @@ export default function CourseSelect() {
 	return (
 		<Col>
 			<h1>Course Selection</h1>
-			<p>Placeholder message about course selection (optional).</p>
+			<p>Placeholder message about course selection.</p>
 			<Button onClick={handleNext}>Proceed to Courseware</Button>
 		</Col>
 	);
