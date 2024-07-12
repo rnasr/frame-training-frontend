@@ -26,7 +26,7 @@ export default function ProtectedLayout() {
             </Row>
             <Row className="d-flex justify-content-center align-items-center pb-5 flex-grow-1">
                 <Col md={8} lg={6} xs={12} className="d-flex justify-content-center align-items-center">
-                    <div className="shadow rounded-3 bg-light p-5">
+                    <div className="shadow rounded-3 bg-light p-5 border">
                         <Outlet />
                     </div>
                 </Col>

@@ -7,18 +7,20 @@ import { courseApi } from "../../api/course.js";
 
 export default function Welcome() {
     const navigate = useNavigate();
-    const clientName = "FBC Industreinforce";
     const [agreed, setAgreed] = useState(false);
     const [employeeGroup, setEmployeeGroup] = useState(null);
+    const [postLoginQuestions, setPostLoginQuestions] = useState(null);
 
     const getEmployeeGroup = async () => {
-        try {
-            const group = await courseApi.getEmployeeGroup();
-            setEmployeeGroup(group);
-            console.log(group);
-        } catch (error) {
-            console.log(error);
-        }
+        const group = await courseApi.getEmployeeGroup();
+        setEmployeeGroup(group);
+        console.log(group);
+    }
+
+    const getPostLoginQuestions = async () => {
+        const questions = await courseApi.getPostLoginQuestions();
+        setPostLoginQuestions(questions);
+        console.log(questions);
     }
 
     const handleNext = () => {
@@ -31,7 +33,8 @@ export default function Welcome() {
 
     useEffect(() => {
         getEmployeeGroup();
-    }, []);
+        if (employeeGroup && employeeGroup.askPostLoginQuestions) getPostLoginQuestions();
+    }, [employeeGroup]);
 
 
     return (
@@ -39,6 +42,10 @@ export default function Welcome() {
             <h1>Welcome</h1>
             <hr />
             <p>Welcome to the LMS Training Portal for {employeeGroup && employeeGroup.clientName}.</p>
+            {employeeGroup && employeeGroup.askPostLoginQuestions && <p>Please answer the following questions.</p>}
+            {postLoginQuestions && postLoginQuestions.map(question => (
+                <p key={question.id}>{question.question}</p>
+            ))}
             <p>To continue, please check the box below and proceed to course select.</p>
             
             <Form className="">
