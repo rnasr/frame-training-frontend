@@ -1,30 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Col, Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-
-import rootStore from "../../stores/rootStore.js";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { courseApi } from "../../api/course.js";
 
 export default function Welcome() {
     const navigate = useNavigate();
-    const [agreed, setAgreed] = useState(false);
-    const [employeeGroup, setEmployeeGroup] = useState(null);
+    const employeeGroup = useOutletContext();
     const [postLoginQuestions, setPostLoginQuestions] = useState(null);
-
-    const getEmployeeGroup = async () => {
-        const group = await courseApi.getEmployeeGroup();
-        setEmployeeGroup(group);
-        console.log(group);
-    }
+    const [agreed, setAgreed] = useState(false);
 
     const getPostLoginQuestions = async () => {
-        const questions = await courseApi.getPostLoginQuestions();
-        setPostLoginQuestions(questions);
-        console.log(questions);
-    }
+        try {
+            const questions = await courseApi.getPostLoginQuestions();
+            setPostLoginQuestions(questions);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const handleNext = () => {
-        navigate('/course-select');
+        navigate("/course-select");
     };
 
     const handleCheckboxChange = (e) => {
@@ -32,10 +27,10 @@ export default function Welcome() {
     };
 
     useEffect(() => {
-        getEmployeeGroup();
-        if (employeeGroup && employeeGroup.askPostLoginQuestions) getPostLoginQuestions();
-    }, []);
-
+        if (employeeGroup && employeeGroup.askPostLoginQuestions) {
+            getPostLoginQuestions();
+        }
+    }, [employeeGroup]);
 
     return (
         <Col>
@@ -43,13 +38,12 @@ export default function Welcome() {
             <hr />
             <p>Welcome to the LMS Training Portal for {employeeGroup && employeeGroup.clientName}.</p>
             {employeeGroup && employeeGroup.askPostLoginQuestions && <p>Please answer the following questions.</p>}
-            {postLoginQuestions && postLoginQuestions.map(question => (
+            {postLoginQuestions && postLoginQuestions.map((question) => (
                 <p key={question.id}>{question.question}</p>
             ))}
             <p>To continue, please check the box below and proceed to course select.</p>
-            
-            <Form className="">
-                <Form.Check 
+            <Form>
+                <Form.Check
                     className="mb-3 p-5"
                     type="checkbox"
                     label="I agree to this website's Terms of Use and Privacy Policy."
@@ -57,7 +51,7 @@ export default function Welcome() {
                     onChange={handleCheckboxChange}
                 />
                 <Button className="w-100" onClick={handleNext} disabled={!agreed}>
-                    Choose Course
+                    Continue to Course Selection
                 </Button>
             </Form>
         </Col>
