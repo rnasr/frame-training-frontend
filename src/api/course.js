@@ -36,8 +36,9 @@ const getAvailableCourses = async () => {
 /* Register new course attempt and record Post Login Question answers if they exist */
 const startCourseAttempt = async (values) => {
     const data = JSON.stringify(values);
+    console.log(data);
     try {
-        const response = await axios.post('CourseAttempt', data, {headers:authHeader()});
+        const response = await axios.post('CourseAttempt', values, {headers:authHeader()});
         return response.data.result;
     } catch (e) {
         console.error(e);

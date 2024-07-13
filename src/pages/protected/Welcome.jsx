@@ -34,7 +34,7 @@ export default function Welcome() {
     useEffect(() => {
         getEmployeeGroup();
         if (employeeGroup && employeeGroup.askPostLoginQuestions) getPostLoginQuestions();
-    }, [employeeGroup]);
+    }, []);
 
 
     return (
