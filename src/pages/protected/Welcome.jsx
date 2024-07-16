@@ -56,6 +56,7 @@ export default function Welcome() {
                 initialValues={{ agreed: false, ...postLoginQuestions.reduce((acc, question) => ({ ...acc, [question.fieldToPopulate]: '' }), {}) }}
                 onSubmit={(values, { setSubmitting }) => {
                     console.log("Form submitted with values:", values);
+                    sessionStorage.setItem('userInfo', JSON.stringify(values));
                     setSubmitting(false);
                     handleNext();
                 }}
