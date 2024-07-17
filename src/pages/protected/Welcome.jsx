@@ -12,20 +12,24 @@ export default function Welcome() {
 
     const employeeGroup = useOutletContext();
     const [postLoginQuestions, setPostLoginQuestions] = useState([]);
-    const [agreed, setAgreed] = useState(false);
 
     const schema = yup.object().shape({
         agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),
-        ...postLoginQuestions.reduce((acc, question) => {
-            acc[question.fieldToPopulate] = yup.string().required('This field is required');
-            return acc;
-        }, {}),
     });
 
     const getPostLoginQuestions = async () => {
         try {
             const questions = await courseApi.getPostLoginQuestions();
-            setPostLoginQuestions(questions);
+            let otherIndex = 1;
+            const transformedQuestions = questions.map(question => {
+                if (question.fieldToPopulate === 'other') {
+                    const newFieldToPopulate = `otherField${otherIndex}`;
+                    otherIndex++;
+                    return { ...question, fieldToPopulate: newFieldToPopulate };
+                }
+                return question;
+            });
+            setPostLoginQuestions(transformedQuestions);
         } catch (e) {
             console.error(e);
         }
@@ -33,10 +37,6 @@ export default function Welcome() {
 
     const handleNext = () => {
         navigate("/course-select");
-    };
-
-    const handleCheckboxChange = (e) => {
-        setAgreed(e.target.checked);
     };
 
     useEffect(() => {
@@ -53,10 +53,25 @@ export default function Welcome() {
             {employeeGroup && employeeGroup.askPostLoginQuestions && <p>Please answer the following questions.</p>}
             <Formik
                 validationSchema={schema}
-                initialValues={{ agreed: false, ...postLoginQuestions.reduce((acc, question) => ({ ...acc, [question.fieldToPopulate]: '' }), {}) }}
+                initialValues={{ agreed: false }}
                 onSubmit={(values, { setSubmitting }) => {
-                    console.log("Form submitted with values:", values);
-                    sessionStorage.setItem('userInfo', JSON.stringify(values));
+                    const transformedValues = { ...values };
+                    
+                    postLoginQuestions.forEach(question => {
+                        // Convert 'numeric' question responses to string
+                        if (question.type === 'numeric') {
+                            transformedValues[question.fieldToPopulate] = String(values[question.fieldToPopulate]);
+                        }
+
+                        // Add otherFieldNameX fields
+                        if (question.fieldToPopulate.startsWith('otherField')) {
+                            const otherFieldIndex = question.fieldToPopulate.match(/\d+/)[0];
+                            transformedValues[`otherFieldName${otherFieldIndex}`] = question.question;
+                        }
+                    });
+
+                    console.log("Form submitted with values:", transformedValues);
+                    sessionStorage.setItem('userInfo', JSON.stringify(transformedValues));
                     setSubmitting(false);
                     handleNext();
                 }}
@@ -65,7 +80,7 @@ export default function Welcome() {
                     <Form noValidate onSubmit={handleSubmit}>
                         {postLoginQuestions.map((question) => (
                             <Form.Group controlId={question.fieldToPopulate} key={question.id}>
-                                <Form.Label>{question.question}</Form.Label>
+                                <Form.Label className="mt-3">{question.question}</Form.Label>
                                 {question.type === 'text' && (
                                     <Form.Control
                                         type="text"
@@ -86,7 +101,7 @@ export default function Welcome() {
                                         placeholder={question.description}
                                     />
                                 )}
-                                {question.type === 'yesNo' && (
+                                {question.type === 'yesno' && (
                                     <div>
                                         <Form.Check
                                             type="radio"
