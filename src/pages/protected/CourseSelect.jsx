@@ -23,7 +23,8 @@ export default function CourseSelect() {
                 courseId: id
             });
             if (response) {
-                sessionStorage.removeItem('userInfo'); 
+                sessionStorage.removeItem('userInfo');
+                sessionStorage.setItem('courseAttemptId', response);
                 navigate("/courseware");
             }
         } catch (e) {
