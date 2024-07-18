@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Button, Form } from "react-bootstrap";
+import { Row, Col, Button, Form } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import * as formik from 'formik';
 import * as yup from 'yup';
@@ -13,9 +13,9 @@ export default function Welcome() {
     const employeeGroup = useOutletContext();
     const [postLoginQuestions, setPostLoginQuestions] = useState([]);
 
-    const schema = yup.object().shape({
+    const [schema, setSchema] = useState(yup.object().shape({
         agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),
-    });
+    }));
 
     const getPostLoginQuestions = async () => {
         try {
@@ -30,6 +30,16 @@ export default function Welcome() {
                 return question;
             });
             setPostLoginQuestions(transformedQuestions);
+
+            // Build the schema from question list
+            const dynamicSchema = transformedQuestions.reduce((acc, question) => {
+                acc[question.fieldToPopulate] = yup.string().required('This field is required');
+                return acc;
+            }, {
+                agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),
+            });
+            setSchema(yup.object().shape(dynamicSchema));
+
         } catch (e) {
             console.error(e);
         }
@@ -49,14 +59,23 @@ export default function Welcome() {
         <Col>
             <h1>Welcome</h1>
             <hr />
-            <p>Welcome to the LMS Training Portal for {employeeGroup && employeeGroup.clientName}.</p>
-            {employeeGroup && employeeGroup.askPostLoginQuestions && <p>Please answer the following questions.</p>}
+            <Row>Welcome to the LMS Training Portal for {employeeGroup && employeeGroup.clientName}.</Row>
+            {employeeGroup && employeeGroup.askPostLoginQuestions && <Row>Please answer the following questions.</Row>}
             <Formik
                 validationSchema={schema}
                 initialValues={{ agreed: false }}
-                onSubmit={(values, { setSubmitting }) => {
+                validateOnChange={false}
+                validateOnBlur={false}
+                onSubmit={async (values, { setSubmitting, setErrors, validateForm }) => {
+                    const errors = await validateForm();
+                    if (Object.keys(errors).length) {
+                        setErrors(errors);
+                        setSubmitting(false);
+                        return;
+                    }
+
                     const transformedValues = { ...values };
-                    
+
                     postLoginQuestions.forEach(question => {
                         // Convert 'numeric' question responses to string
                         if (question.type === 'numeric') {
@@ -65,18 +84,17 @@ export default function Welcome() {
 
                         // Add otherFieldNameX fields
                         if (question.fieldToPopulate.startsWith('otherField')) {
-                            const otherFieldIndex = question.fieldToPopulate.match(/\d+/)[0];
-                            transformedValues[`otherFieldName${otherFieldIndex}`] = question.question;
+                            const suffix = question.fieldToPopulate.slice('otherField'.length);
+                            transformedValues[`otherFieldName${suffix}`] = question.question;
                         }
                     });
 
-                    console.log("Form submitted with values:", transformedValues);
                     sessionStorage.setItem('userInfo', JSON.stringify(transformedValues));
                     setSubmitting(false);
                     handleNext();
                 }}
             >
-                {({ handleSubmit, handleChange, values, errors, touched }) => (
+                {({ handleSubmit, handleChange, values, errors, touched, validateForm }) => (
                     <Form noValidate onSubmit={handleSubmit}>
                         {postLoginQuestions.map((question) => (
                             <Form.Group controlId={question.fieldToPopulate} key={question.id}>
@@ -87,7 +105,7 @@ export default function Welcome() {
                                         name={question.fieldToPopulate}
                                         value={values[question.fieldToPopulate]}
                                         onChange={handleChange}
-                                        isInvalid={touched[question.fieldToPopulate] && !!errors[question.fieldToPopulate]}
+                                        isInvalid={!!errors[question.fieldToPopulate]}
                                         placeholder={question.description}
                                     />
                                 )}
@@ -97,12 +115,12 @@ export default function Welcome() {
                                         name={question.fieldToPopulate}
                                         value={values[question.fieldToPopulate]}
                                         onChange={handleChange}
-                                        isInvalid={touched[question.fieldToPopulate] && !!errors[question.fieldToPopulate]}
+                                        isInvalid={!!errors[question.fieldToPopulate]}
                                         placeholder={question.description}
                                     />
                                 )}
                                 {question.type === 'yesno' && (
-                                    <div>
+                                    <Row>
                                         <Form.Check
                                             type="radio"
                                             label="Yes"
@@ -110,7 +128,7 @@ export default function Welcome() {
                                             value="yes"
                                             checked={values[question.fieldToPopulate] === 'yes'}
                                             onChange={handleChange}
-                                            isInvalid={touched[question.fieldToPopulate] && !!errors[question.fieldToPopulate]}
+                                            isInvalid={!!errors[question.fieldToPopulate]}
                                         />
                                         <Form.Check
                                             type="radio"
@@ -119,9 +137,9 @@ export default function Welcome() {
                                             value="no"
                                             checked={values[question.fieldToPopulate] === 'no'}
                                             onChange={handleChange}
-                                            isInvalid={touched[question.fieldToPopulate] && !!errors[question.fieldToPopulate]}
+                                            isInvalid={!!errors[question.fieldToPopulate]}
                                         />
-                                    </div>
+                                    </Row>
                                 )}
                                 {question.type === 'options' && (
                                     question.options.map(option => (
@@ -132,7 +150,7 @@ export default function Welcome() {
                                             value={option}
                                             checked={values[question.fieldToPopulate] === option}
                                             onChange={handleChange}
-                                            isInvalid={touched[question.fieldToPopulate] && !!errors[question.fieldToPopulate]}
+                                            isInvalid={!!errors[question.fieldToPopulate]}
                                             key={option}
                                         />
                                     ))
@@ -149,7 +167,7 @@ export default function Welcome() {
                             name="agreed"
                             checked={values.agreed}
                             onChange={handleChange}
-                            isInvalid={touched.agreed && !!errors.agreed}
+                            isInvalid={!!errors.agreed}
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.agreed}
@@ -160,6 +178,7 @@ export default function Welcome() {
                     </Form>
                 )}
             </Formik>
+
         </Col>
     );
 }
