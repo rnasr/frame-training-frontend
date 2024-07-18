@@ -8,6 +8,7 @@ import { courseApi } from "../../api/course.js";
 export default function Assessment() {
     const { Formik } = formik;   
     const navigate = useNavigate();
+    
     const [assessmentQuestions, setAssessmentQuestions] = useState([]);
     const courseAttemptId = sessionStorage.getItem('courseAttemptId');
 
@@ -32,10 +33,14 @@ export default function Assessment() {
                 courseAttemptId: courseAttemptId,
                 answers: answers
             });
-            navigate("/next-page");
+            handleNext();
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const handleNext = () => {
+        navigate("/results");
     };
 
     useEffect(() => {
@@ -64,7 +69,7 @@ export default function Assessment() {
                                         label={option.text}
                                         name={question.id}
                                         value={option.id}
-                                        checked={values[question.id] === option.id}
+                                        checked={values[question.id] === String(option.id)}
                                         onChange={handleChange}
                                         key={option.id}
                                     />
