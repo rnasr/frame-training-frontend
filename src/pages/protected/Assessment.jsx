@@ -135,7 +135,7 @@ export default function Assessment() {
                                             )}
                                         </Col>
                                         <Col className="flex-grow-1 align-self-center">
-                                            {question.options.find(option => option.id === selectedOptions[question.id]).reponseText}
+                                            {question.options.find(option => option.id === selectedOptions[question.id]).responseText}
                                         </Col>
                                     </Row>
                                 )}
