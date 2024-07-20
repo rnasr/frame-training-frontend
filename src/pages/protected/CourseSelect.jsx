@@ -25,11 +25,16 @@ export default function CourseSelect() {
             if (response) {
                 sessionStorage.removeItem('userInfo');
                 sessionStorage.setItem('courseAttemptId', response);
-                navigate("/courseware");
+                sessionStorage.setItem('courseId', id);
+                handleNext();
             }
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const handleNext = () => {
+        navigate("/courseware");
     };
 
     useEffect(() => {

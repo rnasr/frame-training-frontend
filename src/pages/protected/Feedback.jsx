@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Col, Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Alert, Row, Col, Button, Form } from "react-bootstrap";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import * as formik from 'formik';
 
 import { courseApi } from "../../api/course.js";
@@ -8,6 +8,9 @@ import { courseApi } from "../../api/course.js";
 export default function Feedback() {
     const { Formik } = formik;   
     const navigate = useNavigate();
+
+    const employeeGroup = useOutletContext();
+    const courseId = sessionStorage.getItem('courseId');
     
     const [feedbackQuestions, setFeedbackQuestions] = useState([]);
     
@@ -20,27 +23,46 @@ export default function Feedback() {
         }
     };
 
-    useEffect(() => {
-        getFeedbackQuestions();
-    }, []);
-
     const submitFeedback = async (values) => {
+        const employeeGroupId = employeeGroup.id; 
+
+        const answeredFeedback = Object.keys(values).map(key => ({
+            feedbackQuestionId: parseInt(key),
+            answer: values[key]
+        }));
+
+        const feedback = {
+            courseId,
+            employeeGroupId,
+            answeredFeedback
+        };
+
         try {
-            await courseApi.submitFeedback(values);
+            await courseApi.submitFeedback(feedback);
             handleNext();
         } catch (e) {
             console.error(e);
         }
     };
-
+    
     const handleNext = () => {
-        navigate("/certificate");
+        navigate("/finish");
     };
+    
+    useEffect(() => {
+        getFeedbackQuestions();
+    }, []);
 
     return (
         <Col>
             <h1>Feedback</h1>
             <hr />
+            <Alert variant="info" className="mx-1 my-5">
+                <Row className="mx-1 px-2">
+                    <Row>Please take a minute and give us your feedback. Your anonymous feedback will be submitted to Human Resources.</Row>
+                    <Row className="my-3"><em>Leaving feedback is optional. If you don't wish to leave feedback click "Continue" below.</em></Row>
+                </Row>
+            </Alert>
             <Formik
                 initialValues={{}}
                 onSubmit={(values, { setSubmitting }) => {
@@ -52,22 +74,52 @@ export default function Feedback() {
                     <Form noValidate onSubmit={handleSubmit}>
                         {feedbackQuestions.map((question) => (
                             <Form.Group controlId={question.id} key={question.id}>
-                                <Form.Label className="mt-3">{question.question}</Form.Label>
-                                {question.options.map(option => (
-                                    <Form.Check
-                                        type="radio"
-                                        label={option.text}
-                                        name={question.id}
-                                        value={option.id}
-                                        checked={values[question.id] === String(option.id)}
-                                        onChange={handleChange}
-                                        key={option.id}
-                                    />
-                                ))}
+                                <Row className="p-3 bg-light rounded my-3 border mx-1">
+                                    <Form.Label className="mb-3">{question.question}</Form.Label>
+                                    
+                                    {question.questionType === 'options' && question.options.map(option => (
+                                        <Form.Check
+                                            type="radio"
+                                            label={option}
+                                            name={question.id}
+                                            value={option}
+                                            checked={values[question.id] === option}
+                                            onChange={handleChange}
+                                            key={option}
+                                        />
+                                    ))}
+
+                                    {question.questionType === 'rating' && (
+                                        <div>
+                                            {[1, 2, 3, 4, 5].map(rating => (
+                                                <Form.Check
+                                                    type="radio"
+                                                    label={rating}
+                                                    name={question.id}
+                                                    value={rating}
+                                                    checked={values[question.id] === rating.toString()}
+                                                    onChange={handleChange}
+                                                    key={rating}
+                                                    inline
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {question.questionType === 'text' && (
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            name={question.id}
+                                            value={values[question.id] || ''}
+                                            onChange={handleChange}
+                                        />
+                                    )}
+                                </Row>
                             </Form.Group>
                         ))}
                         <Button className="w-100 mt-5" type="submit">
-                            Submit Feedback and Get Certificate
+                            Continue to Course Completion
                         </Button>
                     </Form>
                 )}
