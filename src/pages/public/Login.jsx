@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
-import {useLocation, useNavigate, Link} from "react-router-dom";
-import {Alert, Form, Button} from 'react-bootstrap';
-
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { Alert, Form, Button } from 'react-bootstrap';
 import * as formik from 'formik';
 import * as yup from 'yup';
 
@@ -9,17 +8,20 @@ import rootStore from "../../stores/rootStore.js";
 
 export default function Login() {
     const { Formik } = formik;
+    const navigate = useNavigate();
+
+    const authStore = rootStore.authenticationStore;
+    const [pageState, setPageState] = useState({pageError: null});
+
     const schema = yup.object().shape({
         username: yup.string().required(),
         passkey: yup.string().required(),
     });
 
-    const [pageState, setPageState] = useState({pageError: null});
-    let navigate = useNavigate();
-    let location = useLocation();
-    let authStore = rootStore.authenticationStore;
-    let from = location.state?.from?.pathname || "/";
-    console.log(from); 
+    // Check if sessionStorage exists and delete it if it does
+    useEffect(() => {
+        if (sessionStorage) sessionStorage.clear();        
+    }, []);
 
     return (                                
         <>
@@ -29,9 +31,7 @@ export default function Login() {
                     try {
                         try {
                             await authStore.signIn(values.username, values.passkey) 
-                            // navigate(from, { replace: true });
-                            navigate("/welcome", { replace: true }); 
-                            // window.location.href = "/welcome";
+                            navigate("/welcome"); 
                         } catch (e){
                             setPageState(prevState => {return {...prevState, pageError: "Invalid username / passkey" }})
                             console.error("Invalid username / passkey" + e);
