@@ -97,10 +97,10 @@ export default function Assessment() {
                     <Form noValidate onSubmit={handleSubmit}>
 
                         {/* Map each question to a Form.Group */}
-                        {assessmentQuestions.map((question) => (
-                            <Form.Group controlId={question.id} key={question.id}>
+                        {assessmentQuestions.map((question, index) => (
+                            <Form.Group controlId={question.id} key={index}>
                                 <Row className="p-3 bg-light rounded my-3 border mx-1">
-                                    <Form.Label className="mb-3">{question.question}</Form.Label>
+                                    <Form.Label className="mb-3">{index + 1}) {question.question}</Form.Label>
 
                                     {/* Map each option to a Form.Check */}
                                     {question.options.map(option => (
@@ -127,16 +127,14 @@ export default function Assessment() {
                                 {/* Display response text if an option is selected */}
                                 {selectedOptions[question.id] && (
                                     <Row className="p-2 ms-5">
-                                        <Col xs="auto" className="align-self-center">
+                                        <p className="d-flex align-items-center"> 
                                             {question.options.find(option => option.id === selectedOptions[question.id]).correct ? (
-                                                <i className="bi-check-circle-fill text-success fs-4"></i>
+                                                <i className="bi-check-circle-fill text-success fs-4 me-2"> </i>
                                             ) : (
-                                                <i className="bi-x-circle-fill text-danger fs-4"></i>
+                                                <i className="bi-x-circle-fill text-danger fs-4 me-2"> </i>
                                             )}
-                                        </Col>
-                                        <Col className="flex-grow-1 align-self-center">
                                             {question.options.find(option => option.id === selectedOptions[question.id]).responseText}
-                                        </Col>
+                                        </p>
                                     </Row>
                                 )}
 

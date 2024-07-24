@@ -59,8 +59,8 @@ export default function Welcome() {
         <Col>
             <h1>Welcome</h1>
             <hr />
-            <Row>Welcome to the LMS Training Portal for {employeeGroup && employeeGroup.clientName}.</Row>
-            {employeeGroup && employeeGroup.askPostLoginQuestions && <Row>Please answer the following questions.</Row>}
+            <p>Welcome to the LMS Training Portal for <strong>{employeeGroup && employeeGroup.clientName}</strong>.</p>
+            {employeeGroup && employeeGroup.askPostLoginQuestions && <p>Please provide the following information:</p>}
             <Formik
                 validationSchema={schema}
                 initialValues={{ agreed: false }}
@@ -96,70 +96,77 @@ export default function Welcome() {
             >
                 {({ handleSubmit, handleChange, values, errors, touched, validateForm }) => (
                     <Form noValidate onSubmit={handleSubmit}>
-                        {postLoginQuestions.map((question) => (
-                            <Form.Group controlId={question.fieldToPopulate} key={question.id}>
-                                <Form.Label className="mt-3">{question.question}</Form.Label>
-                                {question.type === 'text' && (
-                                    <Form.Control
-                                        type="text"
-                                        name={question.fieldToPopulate}
-                                        value={values[question.fieldToPopulate]}
-                                        onChange={handleChange}
-                                        isInvalid={!!errors[question.fieldToPopulate]}
-                                        placeholder={question.description}
-                                    />
-                                )}
-                                {question.type === 'numeric' && (
-                                    <Form.Control
-                                        type="number"
-                                        name={question.fieldToPopulate}
-                                        value={values[question.fieldToPopulate]}
-                                        onChange={handleChange}
-                                        isInvalid={!!errors[question.fieldToPopulate]}
-                                        placeholder={question.description}
-                                    />
-                                )}
-                                {question.type === 'yesno' && (
-                                    <Row>
-                                        <Form.Check
-                                            type="radio"
-                                            label="Yes"
-                                            name={question.fieldToPopulate}
-                                            value="yes"
-                                            checked={values[question.fieldToPopulate] === 'yes'}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors[question.fieldToPopulate]}
-                                        />
-                                        <Form.Check
-                                            type="radio"
-                                            label="No"
-                                            name={question.fieldToPopulate}
-                                            value="no"
-                                            checked={values[question.fieldToPopulate] === 'no'}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors[question.fieldToPopulate]}
-                                        />
-                                    </Row>
-                                )}
-                                {question.type === 'options' && (
-                                    question.options.map(option => (
-                                        <Form.Check
-                                            type="radio"
-                                            label={option}
-                                            name={question.fieldToPopulate}
-                                            value={option}
-                                            checked={values[question.fieldToPopulate] === option}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors[question.fieldToPopulate]}
-                                            key={option}
-                                        />
-                                    ))
-                                )}
-                                <Form.Control.Feedback type="invalid">
-                                    {errors[question.fieldToPopulate]}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                        ))}
+                        <Row>
+                            {postLoginQuestions.map((question, index) => (
+                                <Col md={6} key={question.id}>
+                                    <hr />
+                                    <Form.Group controlId={question.fieldToPopulate}>
+                                        
+                                        <Form.Label>{question.question}</Form.Label>
+                                        {question.type === 'text' && (
+                                            <Form.Control
+                                                type="text"
+                                                name={question.fieldToPopulate}
+                                                value={values[question.fieldToPopulate]}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors[question.fieldToPopulate]}
+                                                placeholder={question.description}
+                                            />
+                                        )}
+                                        {question.type === 'numeric' && (
+                                            <Form.Control
+                                                type="number"
+                                                name={question.fieldToPopulate}
+                                                value={values[question.fieldToPopulate]}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors[question.fieldToPopulate]}
+                                                placeholder={question.description}
+                                            />
+                                        )}
+                                        {question.type === 'yesno' && (
+                                            <>
+                                                <Form.Check
+                                                    type="radio"
+                                                    label="Yes"
+                                                    name={question.fieldToPopulate}
+                                                    value="yes"
+                                                    checked={values[question.fieldToPopulate] === 'yes'}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors[question.fieldToPopulate]}
+                                                />
+                                                <Form.Check
+                                                    type="radio"
+                                                    label="No"
+                                                    name={question.fieldToPopulate}
+                                                    value="no"
+                                                    checked={values[question.fieldToPopulate] === 'no'}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors[question.fieldToPopulate]}
+                                                />
+                                            </>
+                                        )}
+                                        {question.type === 'options' && (
+                                            question.options.map(option => (
+                                                <Form.Check
+                                                    type="radio"
+                                                    label={option}
+                                                    name={question.fieldToPopulate}
+                                                    value={option}
+                                                    checked={values[question.fieldToPopulate] === option}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors[question.fieldToPopulate]}
+                                                    key={option}
+                                                />
+                                            ))
+                                        )}
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors[question.fieldToPopulate]}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            ))}
+                        </Row>
+                       
                         <Form.Check
                             className="mb-3 p-5"
                             type="checkbox"
