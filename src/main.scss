@@ -11,11 +11,16 @@ $info: $air-superiority-blue;
 $tertiary: $light-sky-blue;
 $primary: $indigo-dye;
 $light: #F5FFF5;
-$nav-underline-link-active-color: $indigo-dye;
+$nav-underline-link-active-color: $prussian-blue;
 
 $border-radius: 0.35rem;
 $border-radius-lg: 1rem;
 $border-radius-sm: 0.2rem;
 
+input {
+    outline-color: $secondary;
+    outline-style: solid;
+    outline-width: 2px;
+  }
 
 @import 'node_modules/bootstrap/scss/bootstrap.scss';

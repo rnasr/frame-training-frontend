@@ -96,10 +96,9 @@ export default function Welcome() {
             >
                 {({ handleSubmit, handleChange, values, errors, touched, validateForm }) => (
                     <Form noValidate onSubmit={handleSubmit}>
-                        <Row>
+                        <Row className="border-bottom">
                             {postLoginQuestions.map((question, index) => (
-                                <Col md={6} key={question.id}>
-                                    <hr />
+                                <Col md={6} key={question.id} className="border-bottom py-4">
                                     <Form.Group controlId={question.fieldToPopulate}>
                                         
                                         <Form.Label>{question.question}</Form.Label>
@@ -169,7 +168,7 @@ export default function Welcome() {
                        
                         <Form.Check
                             className="mb-3 p-5"
-                            type="checkbox"
+                            type="checkbox" 
                             label="I agree to this website's Terms of Use and Privacy Policy."
                             name="agreed"
                             checked={values.agreed}
