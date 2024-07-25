@@ -88,9 +88,9 @@ const recordAssessmentAnswers = async (values) => {
 }
 
 /* Complete Course Attempt */
-const completeCourseAttempt = async () => {
+const completeCourseAttempt = async (id) => {
     try {
-        const response = await axios.put('CourseAttempt/complete', {headers:authHeader()});
+        const response = await axios.put('CourseAttempt/complete', {id: id}, {headers:authHeader()});
         return response.data.result;
     } catch (e) {
         console.error(e);

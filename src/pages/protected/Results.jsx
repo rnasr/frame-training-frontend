@@ -21,6 +21,14 @@ export default function Results() {
 		}
 	};
 
+	const completeCourseAttempt = async () => {
+		try {
+			await courseApi.completeCourseAttempt(courseAttemptId);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
 	const disableNext = () => {
 		if (courseAttempt && courseAttempt.allowSubmissionOnFail) return false;
 		else if (courseAttempt && courseAttempt.passed) return false;
@@ -28,6 +36,7 @@ export default function Results() {
 	};
 
 	const handleNext = () => {
+		completeCourseAttempt();
 		if (courseAttempt.askForFeedback) navigate("/feedback");
 		else navigate("/finish");
 	};
