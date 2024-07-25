@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { Container, Col, Row, Image } from "react-bootstrap";
+
+import LoadingBar from "../components/LoadingBar.jsx";
 import rootStore from "../stores/rootStore.js";
 import { courseApi } from "../api/course.js";
 
@@ -28,7 +30,7 @@ export default function ProtectedLayout() {
     };
 
     if (!employeeGroup) {
-        return <div>Loading...</div>; // You can replace this with a loading spinner if needed
+        return <LoadingBar />;
     }
 
     return (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
+import LoadingBar from "../../components/LoadingBar.jsx";
 import { courseApi } from "../../api/course.js";
 
 export default function CourseSelect() {
@@ -40,6 +41,10 @@ export default function CourseSelect() {
     useEffect(() => {
         getAvailableCourses();
     }, []);
+
+    if (!availableCourses) {
+        return <LoadingBar />;
+    }
 
     return (
         <Col>
