@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Alert, Row, Col, Button } from "react-bootstrap";
+import { Alert, Col, Button } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
-
 
 import { courseApi } from "../../api/course.js";
 
@@ -22,8 +21,15 @@ export default function Results() {
 		}
 	};
 
+	const disableNext = () => {
+		if (courseAttempt.allowSubmissionOnFail) return false;
+		else if (courseAttempt.passed) return false;
+		else return true;
+	};
+
 	const handleNext = () => {
-		navigate("/feedback");
+		if (courseAttempt.askForFeedback) navigate("/feedback");
+		else navigate("/finish");
 	};
 
 	useEffect(() => {
@@ -56,7 +62,7 @@ export default function Results() {
                     </div>					
 				</>
 			)}
-			<Button className='mt-5 w-100' onClick={handleNext}>Submit Assessment Results and Continue</Button>
+			<Button className='mt-5 w-100' onClick={handleNext} disabled={disableNext()}>Submit Assessment Results and Continue</Button>
 		</Col>
 	);
 }
