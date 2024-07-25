@@ -4,6 +4,9 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 // Import public pages to pass to router
 import PublicLayout from "./PublicLayout.jsx";
 import Login from "./public/Login.jsx";
+import Terms from "./public/Terms.jsx";
+import Privacy from "./public/Privacy.jsx";
+
 
 // Import pages that require authorization
 import ProtectedLayout from "./ProtectedLayout.jsx";
@@ -40,6 +43,14 @@ export default function ApplicationRoutes() {
                         <Login />
                     </PublicLayout>
                 }
+            />
+            <Route
+                path="/terms"
+                element={<Terms />}
+            />
+            <Route
+                path="/privacy"
+                element={<Privacy />}
             />
 
             {/* Protected routes */}

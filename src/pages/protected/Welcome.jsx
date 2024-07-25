@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import * as formik from 'formik';
 import * as yup from 'yup';
 
 import { courseApi } from "../../api/course.js";
 
 export default function Welcome() {
-    const { Formik } = formik;   
+    const { Formik } = formik;
     const navigate = useNavigate();
-
     const employeeGroup = useOutletContext();
     const [postLoginQuestions, setPostLoginQuestions] = useState([]);
-
     const [schema, setSchema] = useState(yup.object().shape({
         agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),
     }));
@@ -31,7 +29,6 @@ export default function Welcome() {
             });
             setPostLoginQuestions(transformedQuestions);
 
-            // Build the schema from question list
             const dynamicSchema = transformedQuestions.reduce((acc, question) => {
                 acc[question.fieldToPopulate] = yup.string().required('This field is required');
                 return acc;
@@ -77,12 +74,10 @@ export default function Welcome() {
                     const transformedValues = { ...values };
 
                     postLoginQuestions.forEach(question => {
-                        // Convert 'numeric' question responses to string
                         if (question.type === 'numeric') {
                             transformedValues[question.fieldToPopulate] = String(values[question.fieldToPopulate]);
                         }
 
-                        // Add otherFieldNameX fields
                         if (question.fieldToPopulate.startsWith('otherField')) {
                             const suffix = question.fieldToPopulate.slice('otherField'.length);
                             transformedValues[`otherFieldName${suffix}`] = question.question;
@@ -100,7 +95,6 @@ export default function Welcome() {
                             {postLoginQuestions.map((question, index) => (
                                 <Col md={6} key={question.id} className="border-bottom py-4">
                                     <Form.Group controlId={question.fieldToPopulate}>
-                                        
                                         <Form.Label>{question.question}</Form.Label>
                                         {question.type === 'text' && (
                                             <Form.Control
@@ -165,11 +159,10 @@ export default function Welcome() {
                                 </Col>
                             ))}
                         </Row>
-                       
                         <Form.Check
                             className="mb-3 p-5"
                             type="checkbox" 
-                            label="I agree to this website's Terms of Use and Privacy Policy."
+                            label={<span>I agree to this website's <Link to="/terms" target="_blank">Terms of Use</Link> and <Link to="/privacy" target="_blank">Privacy Policy</Link>.</span>}
                             name="agreed"
                             checked={values.agreed}
                             onChange={handleChange}
@@ -184,7 +177,6 @@ export default function Welcome() {
                     </Form>
                 )}
             </Formik>
-
         </Col>
     );
 }
