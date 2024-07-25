@@ -22,8 +22,8 @@ export default function Results() {
 	};
 
 	const disableNext = () => {
-		if (courseAttempt.allowSubmissionOnFail) return false;
-		else if (courseAttempt.passed) return false;
+		if (courseAttempt && courseAttempt.allowSubmissionOnFail) return false;
+		else if (courseAttempt && courseAttempt.passed) return false;
 		else return true;
 	};
 
@@ -42,8 +42,15 @@ export default function Results() {
 			<hr />
 			{courseAttempt && (
 				<>
-					<p className="ms-1 my-4 fs-5">You got <strong>{courseAttempt.recordedScore} correct</strong> out of <strong>{courseAttempt.possibleScore}</strong>.</p>
-					<p className="ms-1 my-4 fs-3"><i className="bi-check-circle-fill text-success fs-4"></i> Your score is {courseAttempt.recordedScore / courseAttempt.possibleScore * 100}%</p>
+					{courseAttempt && courseAttempt.showScoreToTrainee && 
+					<>
+						<p className="ms-1 my-4 fs-5">
+							You got <strong>{courseAttempt.recordedScore} correct</strong> out of <strong>{courseAttempt.possibleScore}</strong>.
+						</p>
+						<p className="ms-1 my-4 fs-3">
+							<i className="bi-check-circle-fill text-success fs-4"></i> Your score is {courseAttempt.recordedScore / courseAttempt.possibleScore * 100}%
+						</p>
+					</>}
 					<p className="ms-1 my fs-6">A score of 80% or more is considered a successful completion.</p>
 					<Alert variant="info">
 						<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
