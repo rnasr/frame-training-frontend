@@ -88,9 +88,9 @@ const recordAssessmentAnswers = async (values) => {
 }
 
 /* Complete Course Attempt */
-const completeCourseAttempt = async (id) => {
+const completeCourseAttempt = async (attemptId) => {
     try {
-        const response = await axios.put('CourseAttempt/complete', {id: id}, {headers:authHeader()});
+        const response = await axios.put('CourseAttempt/complete', {id: attemptId}, {headers:authHeader()});
         return response.data.result;
     } catch (e) {
         console.error(e);
@@ -121,7 +121,7 @@ const submitFeedback = async (values) => {
 /* Get Certificate */
 const getCertificate = async (attemptId) => {
     try {
-        const response = await axios.get(`Certificate/courseattempt/${attemptId}`, {headers:authHeader()});
+        const response = await axios.get(`Certificate/CourseAttempt/${attemptId}`, {headers:authHeader()});
         return response.data.result;
     } catch (e) {
         console.error(e);
