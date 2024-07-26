@@ -6,6 +6,7 @@ import PublicLayout from "./PublicLayout.jsx";
 import Login from "./public/Login.jsx";
 import Terms from "./public/Terms.jsx";
 import Privacy from "./public/Privacy.jsx";
+import Register from "./public/Register.jsx";
 
 
 // Import pages that require authorization
@@ -51,6 +52,10 @@ export default function ApplicationRoutes() {
             <Route
                 path="/privacy"
                 element={<Privacy />}
+            />
+            <Route
+                path="/register"
+                element={<Register />}
             />
 
             {/* Protected routes */}
