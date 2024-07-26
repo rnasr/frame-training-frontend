@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Alert } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import {SCORM} from 'pipwerks-scorm-api-wrapper';
 
 import { courseApi } from "../../api/course.js";
 
@@ -9,7 +10,7 @@ export default function Courseware() {
 
     const employeeGroup = useOutletContext();
 	const courseAttemptId = sessionStorage.getItem('courseAttemptId');
-	
+
 	const [coursewareUrl, setCoursewareUrl] = useState(null);
 	const [courseCompleted, setCourseCompleted] = useState(false);
 
@@ -27,7 +28,7 @@ export default function Courseware() {
 
 		// Enable button if course completion is not required, or course is completed
 		if (employeeGroup && !employeeGroup.mustCompleteCourse) {
-			return false;			
+			return false;
 		} else if (courseCompleted) {
 			return false;
 		}
@@ -43,6 +44,28 @@ export default function Courseware() {
 	useEffect(() => {
 		getCoursewareUrl();
 	}, []);
+
+	useEffect(() => {
+		let courseWindow;
+
+		if (coursewareUrl) {
+			courseWindow = window.open(coursewareUrl, 'CourseWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + window.screen.availWidth + ',height=' + window.screen.availHeight);
+
+			if (courseWindow) {
+				courseWindow.moveTo(0, 0);
+				SCORM.init();
+			} else {
+				console.error("Popup blocked. Please allow popups for this site.");
+			}
+		}
+
+		return () => {
+			if (courseWindow) {
+				SCORM.quit();
+				courseWindow.close();
+			}
+		};
+	}, [coursewareUrl]);
 
 	return (
 		<Col>
