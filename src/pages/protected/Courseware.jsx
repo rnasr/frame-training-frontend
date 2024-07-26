@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Alert } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import {SCORM} from 'pipwerks-scorm-api-wrapper';
+import 'scorm-again';
 
 import { courseApi } from "../../api/course.js";
 
@@ -47,9 +47,10 @@ export default function Courseware() {
 
 	useEffect(() => {
 		let courseWindow;
-
+		var settings = {};
+		window.API = new Scorm12API(settings);
+		window.API_1484_11 = new Scorm2004API(settings);
 		if (coursewareUrl) {
-			SCORM.init();
 			courseWindow = window.open(coursewareUrl, 'CourseWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + window.screen.availWidth + ',height=' + window.screen.availHeight);
 			if (courseWindow) {
 				courseWindow.moveTo(0, 0);
@@ -61,7 +62,6 @@ export default function Courseware() {
 
 		return () => {
 			if (courseWindow) {
-				SCORM.quit();
 				courseWindow.close();
 			}
 		};
