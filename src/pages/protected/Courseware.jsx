@@ -49,11 +49,11 @@ export default function Courseware() {
 		let courseWindow;
 
 		if (coursewareUrl) {
+			SCORM.init();
 			courseWindow = window.open(coursewareUrl, 'CourseWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + window.screen.availWidth + ',height=' + window.screen.availHeight);
-
 			if (courseWindow) {
 				courseWindow.moveTo(0, 0);
-				SCORM.init();
+
 			} else {
 				console.error("Popup blocked. Please allow popups for this site.");
 			}
