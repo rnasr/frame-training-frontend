@@ -13,30 +13,17 @@ export default function Courseware() {
 
 	const [coursewareUrl, setCoursewareUrl] = useState(null);
 	const [courseCompleted, setCourseCompleted] = useState(false);
+	const [enableNext, setEnableNext] = useState(false);
 
 	const getCoursewareUrl = async () => {
 		try {
-			const response = await courseApi.getCourseAttempt(courseAttemptId);
-			setCoursewareUrl(response.courseLaunchUrl);
+			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
+			setCoursewareUrl(courseAttempt.courseLaunchUrl);
 			console.log(response.courseLaunchUrl);
 		} catch (e) {
 			console.error(e);
 		}
 	};
-
-	const disableNext = () => {
-
-		// Enable button if course completion is not required, or course is completed
-		if (employeeGroup && !employeeGroup.mustCompleteCourse) {
-			return false;
-		} else if (courseCompleted) {
-			return false;
-		}
-
-		// If required course is not completed, disable button
-		return true;
-	};
-
 	const handleNext = () => {
 		navigate("/assessment");
 	};
@@ -46,11 +33,47 @@ export default function Courseware() {
 	}, []);
 
 	useEffect(() => {
+		if (employeeGroup.mustCompleteCourse && courseCompleted){
+			setEnableNext(true);
+		} else if (!employeeGroup.mustCompleteCourse){
+			setEnableNext(true);
+		} else {
+			setEnableNext(false);
+		}
+	}, [employeeGroup, courseCompleted]);
+
+	useEffect(() => {
 		let courseWindow;
 		var settings = {};
-		window.API = new Scorm12API(settings);
-		window.API_1484_11 = new Scorm2004API(settings);
+		setCourseCompleted(false);
 		if (coursewareUrl) {
+			window.API = new Scorm12API(settings);
+			window.API_1484_11 = new Scorm2004API(settings);
+			//SCORM 1.2 events
+			window.API.on("LMSSetValue.cmi.core.lesson_status", function(CMIElement, value) {
+				console.log("CMIElement : ", CMIElement);
+				console.log("value : ", value);
+				if (value === 'passed' || value === 'completed'){
+					setCourseCompleted(true);
+				}
+			});
+
+			//SCORM 2004 events
+			window.API.on("LMSSetValue.cmi.completion_status", function(CMIElement, value) {
+				console.log("CMIElement : ", CMIElement);
+				console.log("value : ", value);
+				if (value === 'completed'){
+					setCourseCompleted(true);
+				}
+			});
+			window.API.on("LMSSetValue.cmi.success_status", function(CMIElement, value) {
+				console.log("CMIElement : ", CMIElement);
+				console.log("value : ", value);
+				if (value === 'passed'){
+					setCourseCompleted(true);
+				}
+			});
+
 			courseWindow = window.open(coursewareUrl, 'CourseWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + window.screen.availWidth + ',height=' + window.screen.availHeight);
 			if (courseWindow) {
 				courseWindow.moveTo(0, 0);
@@ -76,12 +99,8 @@ export default function Courseware() {
 				<p className="ms-1 my-4 d-flex align-items-center"><i className="bi-info-circle-fill text-info fs-4 mx-2"></i><strong> Please keep this window open while you are taking the course.</strong></p>
 				<p className="ms-1 my-4">Once you have finished, click the button below to go to the Assessment section.</p>
 			</Alert>
-			{coursewareUrl && (
-				<>
-					{/* if courseware url exists, launch course and then store completion status in courseCompleted */}
-				</>
-			)}
-			<Button className='mt-5 w-100' onClick={handleNext} disabled={disableNext()}>Go to Assessment</Button>
+
+			<Button className='mt-5 w-100' onClick={handleNext} disabled={!enableNext}>{enableNext ? "Go to Assessment" : "You must complete the course to continue."}</Button>
 		</Col>
 	);
 }

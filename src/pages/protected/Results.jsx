@@ -9,12 +9,26 @@ export default function Results() {
 
 	const courseAttemptId = sessionStorage.getItem('courseAttemptId');
 	const [courseAttempt, setCourseAttempt] = useState(null);
+	const [passingScore, setPassingScore] = useState(null);
+	const [score, setScore] = useState(null);
 
 	//Get current state of course attempt
 	const getCourseAttempt = async () => {
 		try {
 			const response = await courseApi.getCourseAttempt(courseAttemptId);
 			setCourseAttempt(response);
+			if (response.possibleScore && response.passingScore){
+				let passPercentage = (response.passingScore / response.possibleScore ) * 100;
+				//round to 2 decimals
+				passPercentage = Math.round((passPercentage + Number.EPSILON) * 100) / 100
+				setPassingScore(passPercentage);
+			}
+			if (response.recordedScore){
+				let scorePercentage = (response.recordedScore / response.possibleScore) * 100;
+				scorePercentage = Math.round((scorePercentage + Number.EPSILON) * 100) / 100;
+				setScore(scorePercentage);
+			}
+
 			console.log(response);
 		} catch (e) {
 			console.error(e);
@@ -30,9 +44,7 @@ export default function Results() {
 	};
 
 	const disableNext = () => {
-		if (courseAttempt && courseAttempt.allowSubmissionOnFail) return false;
-		else if (courseAttempt && courseAttempt.passed) return false;
-		else return true;
+		return !courseAttempt?.passed && !courseAttempt?.allowSubmissionOnFail;
 	};
 
 	const handleNext = () => {
@@ -51,16 +63,22 @@ export default function Results() {
 			<hr />
 			{courseAttempt && (
 				<>
-					{courseAttempt && courseAttempt.showScoreToTrainee && 
+					{courseAttempt && courseAttempt.showScoreToTrainee &&
 					<>
 						<p className="ms-1 my-4 fs-5">
 							You got <strong>{courseAttempt.recordedScore} correct</strong> out of <strong>{courseAttempt.possibleScore}</strong>.
 						</p>
 						<p className="ms-1 my-4 fs-3">
-							<i className="bi-check-circle-fill text-success fs-4"></i> Your score is {courseAttempt.recordedScore / courseAttempt.possibleScore * 100}%
+							{courseAttempt.passed ? (
+									<><i className="bi-check-circle-fill text-success fs-4"></i> You passed! Your score is {score}%</>
+								) : (
+									<><i className="bi-x-circle-fill text-danger fs-4"></i> Sorry you did not pass. Your score is {score}%</>
+								)
+							}
+
 						</p>
 					</>}
-					<p className="ms-1 my fs-6">A score of 80% or more is considered a successful completion.</p>
+					<p className="ms-1 my fs-6">A score of {passingScore}% or more is considered a successful completion.</p>
 					<Alert variant="info">
 						<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
 						<p className="mt-3">If you wish to review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
@@ -75,7 +93,7 @@ export default function Results() {
                                 <p key={i}><strong>{courseAttempt[`otherFieldName${i + 1}`]}:</strong> {courseAttempt[`otherField${i + 1}`]}</p>
                             )
                         ))}
-                    </div>					
+                    </div>
 				</>
 			)}
 			<Button className='mt-5 w-100' onClick={handleNext} disabled={disableNext()}>Submit Assessment Results and Continue</Button>

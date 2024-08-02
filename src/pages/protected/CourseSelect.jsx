@@ -11,6 +11,7 @@ export default function CourseSelect() {
 
     const getAvailableCourses = async () => {
         const courses = await courseApi.getAvailableCourses();
+
         setAvailableCourses(courses);
     };
 

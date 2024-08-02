@@ -19,7 +19,7 @@ const getPostLoginQuestions = async () => {
         const response = await axios.get('PostLoginQuestion', {headers:authHeader()});
         return response.data.result;
     } catch (e) {
-        console.error(e);   
+        console.error(e);
     }
 }
 
@@ -121,12 +121,32 @@ const submitFeedback = async (values) => {
 /* Get Certificate */
 const getCertificate = async (attemptId) => {
     try {
-        const response = await axios.get(`Certificate/CourseAttempt/${attemptId}`, {headers:authHeader()});
-        return response.data.result;
+        const response = await axios.get(`Certificate/CourseAttempt/${attemptId}`, {
+            headers: authHeader(),
+            responseType: 'blob' // Important for downloading binary data
+        });
+
+        const filename = getFileNameFromContentDisposition(response.headers['content-disposition']);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     } catch (e) {
         console.error(e);
     }
 }
+
+const getFileNameFromContentDisposition = (contentDisposition) => {
+    const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+    if (matches != null && matches[1]) {
+        return matches[1].replace(/['"]/g, '');
+    }
+    return 'certificate.pdf';
+}
+
 
 export const courseApi = {
     getEmployeeGroup,
