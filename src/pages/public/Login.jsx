@@ -4,34 +4,32 @@ import { Alert, Form, Button } from 'react-bootstrap';
 import * as formik from 'formik';
 import * as yup from 'yup';
 
-import rootStore from "../../stores/rootStore.js";
+import {useAuth} from "../../contexts/AuthContext.jsx";
 
 export default function Login() {
     const { Formik } = formik;
     const navigate = useNavigate();
-
-    const authStore = rootStore.authenticationStore;
     const [pageState, setPageState] = useState({pageError: null});
-
     const schema = yup.object().shape({
         username: yup.string().required(),
         passkey: yup.string().required(),
     });
 
+    let authContext = useAuth();
     // Check if sessionStorage exists and delete it if it does
     useEffect(() => {
-        if (sessionStorage) sessionStorage.clear();        
+        if (sessionStorage) sessionStorage.clear();
     }, []);
 
-    return (                                
+    return (
         <>
-            <Formik                                        
+            <Formik
                 validationSchema={schema}
                 onSubmit={async (values, { setSubmitting }) => {
                     try {
                         try {
-                            await authStore.signIn(values.username, values.passkey) 
-                            navigate("/welcome"); 
+                            await authContext.signIn(values.username, values.passkey)
+                            navigate("/welcome");
                         } catch (e){
                             setPageState(prevState => {return {...prevState, pageError: "Invalid username / passkey" }})
                             console.error("Invalid username / passkey" + e);
@@ -73,7 +71,7 @@ export default function Login() {
                                 name="passkey"
                                 onChange={handleChange}
                                 value={values.passkey}
-                                type="password" 
+                                type="password"
                                 placeholder="Enter passkey"
                                 isInvalid={touched.passkey && !!errors.passkey}
                             />
@@ -88,7 +86,7 @@ export default function Login() {
                                 {pageState.pageError}
                             </Alert>
                         )}
-                    </Form> 
+                    </Form>
                 )}
 
             </Formik>

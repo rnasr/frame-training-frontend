@@ -18,14 +18,17 @@ import Assessment from './protected/Assessment.jsx';
 import Results from './protected/Results.jsx';
 import Feedback from './protected/Feedback.jsx';
 import Finish from './protected/Finish.jsx';
+import {AuthProvider, useAuth} from "../contexts/AuthContext.jsx";
+import setupInterceptors from "../_helpers/axiosInterceptors.js";
 
-// Import authentication store
-import rootStore from "../stores/rootStore.js";
 
-export default function ApplicationRoutes() {
-    const authStore = rootStore.authenticationStore;
-    const [isSignedIn, setIsSignedIn] = useState(authStore.signedIn());
+function ApplicationRoutes() {
+    const authContext = useAuth();
+    const [isSignedIn, setIsSignedIn] = useState(authContext.signedIn());
 
+    useEffect(() => {
+        setupInterceptors(() => authContext);
+    }, [authContext]);
     return (
         <Routes>
             {/* Public routes */}
@@ -59,7 +62,7 @@ export default function ApplicationRoutes() {
             />
 
             {/* Protected routes */}
-            {isSignedIn && (
+            {authContext.signedIn() && (
                 <Route element={<ProtectedLayout />}>
                     <Route path="/welcome" element={<Welcome />} />
                     <Route path="/course-select" element={<CourseSelect />} />
@@ -70,7 +73,7 @@ export default function ApplicationRoutes() {
                     <Route path="/finish" element={<Finish />} />
                 </Route>
             )}
-            {!isSignedIn && (
+            {!authContext.signedIn() && (
                 <Route
                     path="*"
                     element={<Navigate to="/login" />}
@@ -79,3 +82,10 @@ export default function ApplicationRoutes() {
         </Routes>
     );
 }
+
+export default () => (
+    <AuthProvider>
+        <ApplicationRoutes />
+    </AuthProvider>
+);
+

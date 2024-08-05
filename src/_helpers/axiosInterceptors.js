@@ -2,8 +2,13 @@ import axios from "./axiosInstance";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const setupInterceptors = (rootStore) => {
-    const store = rootStore;
+const setupInterceptors = (getAuthContext) => {
+
+    // Remove all request interceptors
+    axios.interceptors.request.handlers = [];
+    // Remove all response interceptors
+    axios.interceptors.response.handlers = [];
+
     /**
      * This interceptor's job is to attach the bearer token to every request that requires it so that we don't have
      * to do that explicitly for every service call.
@@ -27,9 +32,10 @@ const setupInterceptors = (rootStore) => {
             return res;
         },
         async (err) => {
+            const authContext = getAuthContext();
+            console.log("AuthContext", authContext);
             console.error(err);
             const originalConfig = err.config;
-            const authStore = store.authenticationStore;
             if (err.response.status == 400 || err.response.status == 500){
                 var message = "An error occurred. Please try again."
                 if (err.response?.data?.error?.errorDescription !== null ){
@@ -40,21 +46,24 @@ const setupInterceptors = (rootStore) => {
                     message ="An error has occurred: " + JSON.stringify(err);
                 }
                 console.log(message);
-                //todo: show an error
             }
-            if (originalConfig.url !== "/auth/login" && originalConfig.url !== "/auth/refresh"
+            const reqUrl = originalConfig.url.toLowerCase();
+            console.log("REQ URL: " + reqUrl);
+            if (reqUrl !== "auth/login" && reqUrl !== "auth/refresh"
                 && err.response) {
                 // Access Token was expired so lets try to refresh it
                 if (err.response.status === 401 && !originalConfig._retry) {
                     originalConfig._retry = true;
-                    await authStore.refreshToken();
-                    var newJwtToken = authStore.authentication.jwtToken
+                    const newJwtToken = await authContext.refreshToken();
+                    console.log("old token", authContext.authentication.jwtToken);
+                    console.log("new token", newJwtToken);
                     originalConfig.headers.Authorization = `Bearer ${newJwtToken}`;
                     return axios(originalConfig);
                 }
             }
-            if (err.response && originalConfig.url === "/user/refresh"){
-                authStore.logout();
+            if (err.response && reqUrl === "auth/refresh"){
+                console.log("COULD NOT REFRESH... LOGGING OUT")
+                authContext.logout();
             }
             return Promise.reject({err,message:err.response?.data?.error?.errorDescription});
         }

@@ -7,14 +7,14 @@ import * as yup from 'yup';
 import { courseApi } from "../../api/course.js";
 
 export default function Assessment() {
-    const { Formik } = formik;   
+    const { Formik } = formik;
     const navigate = useNavigate();
-    
+
     const [assessmentQuestions, setAssessmentQuestions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
     const [initialSelections, setInitialSelections] = useState({});
     const courseAttemptId = sessionStorage.getItem('courseAttemptId');
-    
+
     const getAssessmentQuestions = async () => {
         try {
             const questions = await courseApi.getAssessmentQuestions(courseAttemptId);
@@ -98,7 +98,7 @@ export default function Assessment() {
 
                         {/* Map each question to a Form.Group */}
                         {assessmentQuestions.map((question, index) => (
-                            <Form.Group controlId={question.id} key={index}>
+                            <Form.Group key={index}>
                                 <Row className="p-3 bg-light rounded my-3 border mx-1">
                                     <Form.Label className="mb-3">{index + 1}) {question.question}</Form.Label>
 
@@ -127,7 +127,7 @@ export default function Assessment() {
                                 {/* Display response text if an option is selected */}
                                 {selectedOptions[question.id] && (
                                     <Row className="p-2 ms-5">
-                                        <p className="d-flex align-items-center"> 
+                                        <p className="d-flex align-items-center">
                                             {question.options.find(option => option.id === selectedOptions[question.id]).correct ? (
                                                 <i className="bi-check-circle-fill text-success fs-4 me-2"> </i>
                                             ) : (

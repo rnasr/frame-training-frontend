@@ -1,15 +1,14 @@
 import React from "react";
 import { Col, Button } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
-
-import rootStore from "../../stores/rootStore.js";
 import { courseApi } from "../../api/course.js";
+import {useAuth} from "../../contexts/AuthContext.jsx";
 
 export default function Finish() {
     const navigate = useNavigate();
 
-    const authStore = rootStore.authenticationStore;
-    const courseAttemptId = sessionStorage.getItem('courseAttemptId');  
+    const authContext = useAuth();
+    const courseAttemptId = sessionStorage.getItem('courseAttemptId');
     const employeeGroup = useOutletContext();
 
     const getCertificate = async () => {
@@ -29,10 +28,10 @@ export default function Finish() {
     };
 
     const handleLogout = () => {
-        authStore.logout();
+        authContext.logout();
         navigate("/login");
     };
-    
+
     return (
         <Col>
             <h1>Congratulations!</h1>

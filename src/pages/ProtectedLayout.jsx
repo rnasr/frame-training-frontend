@@ -3,11 +3,11 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { Container, Col, Row, Image } from "react-bootstrap";
 
 import LoadingBar from "../components/LoadingBar.jsx";
-import rootStore from "../stores/rootStore.js";
 import { courseApi } from "../api/course.js";
+import {useAuth} from "../contexts/AuthContext.jsx";
 
 export default function ProtectedLayout() {
-    const authStore = rootStore.authenticationStore;
+    const authContext = useAuth();
     const [employeeGroup, setEmployeeGroup] = useState(null);
     const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ export default function ProtectedLayout() {
     }, []);
 
     const handleLogout = () => {
-        authStore.logout();
+        authContext.logout();
         navigate("/login");
     };
 
