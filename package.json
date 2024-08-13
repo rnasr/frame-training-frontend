@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "start:nginx": "nginx -c $PWD/nginx.conf",
     "stop:nginx": "nginx -s stop",
-    "reload:nginx": "nginx -s reload"
+    "reload:nginx": "nginx -s reload",
+    "build:dev": "vite build --mode development",
+    "build:test": "vite build --mode test",
+    "build:prod": "vite build --mode production"
   },
   "dependencies": {
     "axios": "^1.7.2",
