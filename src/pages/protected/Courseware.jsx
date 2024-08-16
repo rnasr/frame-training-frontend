@@ -13,23 +13,31 @@ export default function Courseware() {
 
 	const [coursewareUrl, setCoursewareUrl] = useState(null);
 	const [courseCompleted, setCourseCompleted] = useState(false);
+	const [nextPage, setNextPage] = useState('');
 	const [enableNext, setEnableNext] = useState(false);
 
-	const getCoursewareUrl = async () => {
+	const getCourseData = async () => {
 		try {
 			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
 			setCoursewareUrl(courseAttempt.courseLaunchUrl);
+			if (courseAttempt.askAssessmentQuestions) {
+				setNextPage("/assessment");
+			} else if (courseAttempt.askForFeedback) {
+				setNextPage("/feedback");
+			} else {
+				setNextPage("/finish");
+			}
 			console.log(response.courseLaunchUrl);
 		} catch (e) {
 			console.error(e);
 		}
 	};
 	const handleNext = () => {
-		navigate("/assessment");
+		navigate(nextPage);
 	};
 
 	useEffect(() => {
-		getCoursewareUrl();
+		getCourseData();
 	}, []);
 
 	useEffect(() => {
@@ -100,7 +108,7 @@ export default function Courseware() {
 				<p className="ms-1 my-4">Once you have finished, click the button below to go to the Assessment section.</p>
 			</Alert>
 
-			<Button className='mt-5 w-100' onClick={handleNext} disabled={!enableNext}>{enableNext ? "Go to Assessment" : "You must complete the course to continue."}</Button>
+			<Button className='mt-5 w-100' onClick={handleNext} disabled={!enableNext}>{enableNext ? "Proceed to next section" : "You must complete the course to continue."}</Button>
 		</Col>
 	);
 }
