@@ -16,28 +16,39 @@ export default function Courseware() {
 	const [nextPage, setNextPage] = useState('');
 	const [enableNext, setEnableNext] = useState(false);
 
-	const getCourseData = async () => {
+	const getCourseConfig = async () => {
 		try {
 			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
 			setCoursewareUrl(courseAttempt.courseLaunchUrl);
 			if (courseAttempt.askAssessmentQuestions) {
 				setNextPage("/assessment");
-			} else if (courseAttempt.askForFeedback) {
-				setNextPage("/feedback");
 			} else {
-				setNextPage("/finish");
+				completeCourseAttempt(); 
+				if (courseAttempt.askForFeedback) {
+					setNextPage("/feedback");
+				} else {
+					setNextPage("/finish");
+				}
 			}
-			console.log(response.courseLaunchUrl);
 		} catch (e) {
 			console.error(e);
 		}
 	};
+
+	const completeCourseAttempt = async () => {
+		try {
+			await courseApi.completeCourseAttempt(courseAttemptId);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+	
 	const handleNext = () => {
 		navigate(nextPage);
 	};
 
 	useEffect(() => {
-		getCourseData();
+		getCourseConfig();
 	}, []);
 
 	useEffect(() => {
