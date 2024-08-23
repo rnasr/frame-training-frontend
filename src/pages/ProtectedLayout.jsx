@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { Container, Col, Row, Image } from "react-bootstrap";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import LoadingBar from "../components/LoadingBar.jsx";
 import { courseApi } from "../api/course.js";
 import { useAuth } from "../contexts/AuthContext.jsx";

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {AuthProvider, useAuth} from "../contexts/AuthContext.jsx";
+import setupInterceptors from "../_helpers/axiosInterceptors.js";
 
 // Import public pages to pass to router
 import PublicLayout from "./PublicLayout.jsx";
 import Login from "./public/Login.jsx";
 import Terms from "./public/Terms.jsx";
 import Privacy from "./public/Privacy.jsx";
-import Register from "./public/Register.jsx";
+import Register from "./public/payPerUse/Register.jsx";
+import Purchase from "./public/payPerUse/Purchase.jsx";
 
 
 // Import pages that require authorization
@@ -18,9 +21,6 @@ import Assessment from './protected/Assessment.jsx';
 import Results from './protected/Results.jsx';
 import Feedback from './protected/Feedback.jsx';
 import Finish from './protected/Finish.jsx';
-import {AuthProvider, useAuth} from "../contexts/AuthContext.jsx";
-import setupInterceptors from "../_helpers/axiosInterceptors.js";
-
 
 function ApplicationRoutes() {
     const authContext = useAuth();
@@ -59,6 +59,10 @@ function ApplicationRoutes() {
             <Route
                 path="/register"
                 element={<Register />}
+            />
+            <Route
+                path="/register/purchase"
+                element={<Purchase />}
             />
 
             {/* Protected routes */}
