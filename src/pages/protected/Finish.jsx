@@ -37,8 +37,8 @@ export default function Finish() {
             <h1>Congratulations!</h1>
             <hr />
             <p className="mt-3">Thank you! Your completion has been recorded.</p>
-            {employeeGroup && employeeGroup.showTakeAnotherCourse && <p>If you have additional courses to complete, please click the "Take Another Course" button.</p>}
-            {employeeGroup && courseAttemptId && employeeGroup.generateCertificate && <Button className="mt-3 w-100" onClick={handleCertificate}>Download Certificate</Button>}
+            {employeeGroup && employeeGroup.showTakeAnotherCourse && <p className="mb-5">If you have additional courses to complete, please click the "Take Another Course" button.</p>}
+            {employeeGroup && courseAttemptId && employeeGroup.generateCertificate && <Button className="mt-5 w-100" onClick={handleCertificate}>Download Certificate</Button>}
             {employeeGroup && employeeGroup.showTakeAnotherCourse && <Button className="mt-3 w-100" onClick={handleNewCourse}>Take Another Course</Button>}
             <Button className="mt-3 w-100" onClick={handleLogout}>Logout</Button>
         </Col>
