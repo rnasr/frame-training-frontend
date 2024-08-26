@@ -1,131 +1,74 @@
 /* This file contains all course related API calls aside from auth, listed in order of program flow. */
 
 import axios from "../_helpers/axiosInstance.js";
-import {authHeader} from "../_helpers/authHeader.js";
+import { authHeader } from "../_helpers/authHeader.js";
 
 /* Get Employee Group Details for the group associated with the JWT token */
 const getEmployeeGroup = async () => {
-    try {
-        const response = await axios.get('EmployeeGroup', {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get('EmployeeGroup', {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Get Post Login Questions for group */
 const getPostLoginQuestions = async () => {
-    try {
-        const response = await axios.get('PostLoginQuestion', {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get('PostLoginQuestion', {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Get Available Courses for this employee group */
 const getAvailableCourses = async () => {
-    try {
-        const response = await axios.get('AvailableCourse', {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get('AvailableCourse', {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Register new course attempt and record Post Login Question answers if they exist */
 const startCourseAttempt = async (values) => {
     const data = JSON.stringify(values);
     console.log(data);
-    try {
-        const response = await axios.post('CourseAttempt', values, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.post('CourseAttempt', values, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Get Course Attempt details including Post Login Question answers and score*/
 const getCourseAttempt = async (attemptId) => {
-    try {
-        const response = await axios.get(`CourseAttempt/${attemptId}`, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get(`CourseAttempt/${attemptId}`, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Update Course Attempt details */
 const updateCourseAttempt = async (values) => {
     const data = JSON.stringify(values);
-    try {
-        const response = await axios.put('CourseAttempt', data, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.put('CourseAttempt', data, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /*Get Assessment Questions */
 const getAssessmentQuestions = async (attemptId) => {
-    try {
-        const response = await axios.get(`Assessment/courseattempt/${attemptId}`, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get(`Assessment/courseattempt/${attemptId}`, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Record Answers for Assessment */
 const recordAssessmentAnswers = async (values) => {
     const data = JSON.stringify(values);
-    try {
-        const response = await axios.post('Assessment', data, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.post('Assessment', data, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Complete Course Attempt */
 const completeCourseAttempt = async (attemptId) => {
-    try {
-        const response = await axios.put('CourseAttempt/complete', {id: attemptId}, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.put('CourseAttempt/complete', {id: attemptId}, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Get Feedback Questions */
 const getFeedbackQuestions = async () => {
-    try {
-        const response = await axios.get('Feedback', {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.get('Feedback', {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Submit Feedback */
 const submitFeedback = async (values) => {
     const data = JSON.stringify(values);
-    try {
-        const response = await axios.post('Feedback', data, {headers:authHeader()});
-        return response.data.result;
-    } catch (e) {
-        console.error(e);
-    }
+    return axios.post('Feedback', data, {headers:authHeader()}).then(response => response.data.result);
 }
 
 /* Get Certificate */
 const getCertificate = async (attemptId) => {
-    try {
-        const response = await axios.get(`Certificate/CourseAttempt/${attemptId}`, {
-            headers: authHeader(),
-            responseType: 'blob' // Important for downloading binary data
-        });
-
+    return axios.get(`Certificate/CourseAttempt/${attemptId}`, {
+        headers: authHeader(),
+        responseType: 'blob' // Important for downloading binary data
+    }).then(response => {
         const filename = getFileNameFromContentDisposition(response.headers['content-disposition']);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -134,9 +77,7 @@ const getCertificate = async (attemptId) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    } catch (e) {
-        console.error(e);
-    }
+    });
 }
 
 const getFileNameFromContentDisposition = (contentDisposition) => {
