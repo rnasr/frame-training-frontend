@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 import LoadingBar from "../../components/LoadingBar.jsx";
@@ -57,13 +57,27 @@ export default function CourseSelect() {
             {availableCourses && availableCourses.length > 0 && (
                 <>
                     {availableCourses.map((course) => (
+                        <>
                         <Button
-                            className="w-100 mb-3 p-4"
+                            className="w-100 mb-1 p-4"
                             onClick={() => startCourseAttempt(course.courseId)}
                             key={course.courseId}
+                            disabled={course.payPerUse && course.availableCredits <= 0}
                         >
                             {course.courseName}
                         </Button>
+                        {/* display status of credits and a warning if credits are depleted */}
+                        {course.payPerUse && course.availableCredits <= 0 && (
+                            <Alert variant="warning" size="sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} className="mb-3">
+                              <span style={{ fontWeight: 'bold' }}>Available Credits: {course.availableCredits}.</span> Please purchase more credits to take this course.
+                            </Alert>
+                        )}
+                        {course.payPerUse && course.availableCredits > 0 && (
+                            <Alert variant="info" size="sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} className="mb-3">
+                              <span style={{ fontWeight: 'bold' }}>Available Credits: {course.availableCredits}.</span> 
+                            </Alert>
+                        )}
+                        </>
                     ))}
                 </>
             )}
