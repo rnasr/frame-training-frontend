@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setAuthentication(null);
-        localStorage.removeItem('authentication');
+        localStorage.clear();
         navigate('/login');
     };
 

@@ -8,7 +8,7 @@ import { courseApi } from "../../api/course.js";
 export default function CourseSelect() {
     const navigate = useNavigate();
     const [availableCourses, setAvailableCourses] = useState(null);
-
+    
     const getAvailableCourses = async () => {
         const courses = await courseApi.getAvailableCourses();
 

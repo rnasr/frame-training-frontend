@@ -21,6 +21,7 @@ import Assessment from './protected/Assessment.jsx';
 import Results from './protected/Results.jsx';
 import Feedback from './protected/Feedback.jsx';
 import Finish from './protected/Finish.jsx';
+import { CourseAttemptProvider } from '../contexts/CourseAttemptContext.jsx';
 
 function ApplicationRoutes() {
     const authContext = useAuth();
@@ -68,28 +69,35 @@ function ApplicationRoutes() {
             {/* Protected routes */}
             {authContext.signedIn() && (
                 <Route element={<ProtectedLayout />}>
-                    <Route path="/welcome" element={<Welcome />} />
-                    <Route path="/course-select" element={<CourseSelect />} />
-                    <Route path="/courseware" element={<Courseware />} />
-                    <Route path="/assessment" element={<Assessment />} />
-                    <Route path="/results" element={<Results />} />
-                    <Route path="/feedback" element={<Feedback />} />
-                    <Route path="/finish" element={<Finish />} />
+                    <Route path="/welcome" element={<RequireAuth><Welcome /></RequireAuth>} />
+                    <Route path="/course-select" element={<RequireAuth><CourseSelect /></RequireAuth>} />
+                    <Route path="/courseware" element={<RequireAuth><Courseware /></RequireAuth>} />
+                    <Route path="/assessment" element={<RequireAuth><Assessment/></RequireAuth>} />
+                    <Route path="/results" element={<RequireAuth><Results/></RequireAuth>} />
+                    <Route path="/feedback" element={<RequireAuth><Feedback/></RequireAuth>} />
+                    <Route path="/finish" element={<RequireAuth><Finish/></RequireAuth>} />
                 </Route>
-            )}
-            {!authContext.signedIn() && (
-                <Route
-                    path="*"
-                    element={<Navigate to="/login" />}
-                />
             )}
         </Routes>
     );
 }
 
+const RequireAuth = ({ children }) => {
+    const location = useLocation();
+    const { signedIn } = useAuth();
+
+    if (!signedIn()) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    return children;
+};
+
 export default () => (
     <AuthProvider>
-        <ApplicationRoutes />
+        <CourseAttemptProvider>
+            <ApplicationRoutes />
+        </CourseAttemptProvider>        
     </AuthProvider>
 );
 

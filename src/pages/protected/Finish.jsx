@@ -8,7 +8,7 @@ export default function Finish() {
     const navigate = useNavigate();
 
     const authContext = useAuth();
-    const courseAttemptId = sessionStorage.getItem('courseAttemptId');
+    const courseAttemptId = sessionStorage.getItem('certificateCourseAttemptId');
     const employeeGroup = useOutletContext();
 
     const getCertificate = async () => {

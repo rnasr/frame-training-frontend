@@ -38,6 +38,8 @@ export default function Results() {
 	const completeCourseAttempt = async () => {
 		try {
 			await courseApi.completeCourseAttempt(courseAttemptId);
+			sessionStorage.setItem('certificateCourseAttemptId', courseAttemptId);
+			sessionStorage.removeItem('courseAttemptId');
 		} catch (e) {
 			console.error(e);
 		}
@@ -63,27 +65,47 @@ export default function Results() {
 			<hr />
 			{courseAttempt && (
 				<>
-					{courseAttempt && courseAttempt.showScoreToTrainee &&
-					<>
-						<p className="ms-1 my-4 fs-5">
-							You got <strong>{courseAttempt.recordedScore} correct</strong> out of <strong>{courseAttempt.possibleScore}</strong>.
-						</p>
-						<p className="ms-1 my-4 fs-3">
-							{courseAttempt.passed ? (
-									<><i className="bi-check-circle-fill text-success fs-4"></i> You passed! Your score is {score}%</>
-								) : (
-									<><i className="bi-x-circle-fill text-danger fs-4"></i> Sorry you did not pass. Your score is {score}%</>
-								)
-							}
-
-						</p>
-					</>}
-					<p className="ms-1 my fs-6">A score of {passingScore}% or more is considered a successful completion.</p>
-					<Alert variant="info">
-						<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
-						<p className="mt-3">If you wish to review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
-					</Alert>
-					<p>If the following information is correct, please click the button below to submit your assessment	results:</p>
+					{courseAttempt.possibleScore == 0 && (
+						<>
+							<p className="ms-1 my-4 fs-5">
+							Congratulations! You have completed this course.
+							</p>
+							<Alert variant="info">
+								<p className="mt-3">If you wish to review specific components of the training before submitting your completion, <Link className="p-0" to="/courseware">click here.</Link></p>
+							</Alert>
+							<p>Please click the button below to submit your assessment	results:</p>
+						</>
+					)}
+					{courseAttempt.possibleScore > 0 && (
+						<>
+						{courseAttempt && courseAttempt.showScoreToTrainee &&
+							<>
+								<p className="ms-1 my-4 fs-5">
+									You got <strong>{courseAttempt.recordedScore} correct</strong> out of <strong>{courseAttempt.possibleScore}</strong>.
+								</p>
+								<p className="ms-1 my-4 fs-3">
+									{courseAttempt.passed ? (
+											<><i className="bi-check-circle-fill text-success fs-4"></i> You passed! Your score is {score}%</>
+										) : (
+											<><i className="bi-x-circle-fill text-danger fs-4"></i> Sorry you did not pass. Your score is {score}%</>
+										)
+									}
+		
+								</p>
+							</>
+						}
+						<p className="ms-1 my fs-6">A score of {passingScore}% or more is considered a successful completion.</p>
+						<Alert variant="info">
+							<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
+							<p className="mt-3">If you wish to review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
+						</Alert>
+						<p>If the preceding information is correct, please click the button below to submit your assessment	results:</p>
+						</>
+					)}
+					
+					
+					
+					
 					<div className="mx-1 my-4">
                         {courseAttempt.firstName && <p><strong>First Name:</strong> {courseAttempt.firstName}</p>}
                         {courseAttempt.lastName && <p><strong>Last Name:</strong> {courseAttempt.lastName}</p>}

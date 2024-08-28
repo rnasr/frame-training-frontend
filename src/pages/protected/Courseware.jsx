@@ -4,6 +4,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import 'scorm-again';
 
 import { courseApi } from "../../api/course.js";
+import { useCourseAttempt } from "../../contexts/CourseAttemptContext.jsx";
 
 export default function Courseware() {
 	const navigate = useNavigate();
@@ -15,20 +16,17 @@ export default function Courseware() {
 	const [courseCompleted, setCourseCompleted] = useState(false);
 	const [nextPage, setNextPage] = useState('');
 	const [enableNext, setEnableNext] = useState(false);
+	const courseAttemptContext = useCourseAttempt();
 
 	const getCourseConfig = async () => {
 		try {
 			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
+			courseAttemptContext.setCourseAttempt(courseAttempt);
 			setCoursewareUrl(courseAttempt.courseLaunchUrl);
 			if (courseAttempt.askAssessmentQuestions) {
 				setNextPage("/assessment");
 			} else {
-				completeCourseAttempt(); 
-				if (courseAttempt.askForFeedback) {
-					setNextPage("/feedback");
-				} else {
-					setNextPage("/finish");
-				}
+				setNextPage("/results");
 			}
 		} catch (e) {
 			console.error(e);

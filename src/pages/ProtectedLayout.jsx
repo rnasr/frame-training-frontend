@@ -4,12 +4,24 @@ import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import LoadingBar from "../components/LoadingBar.jsx";
 import { courseApi } from "../api/course.js";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useCourseAttempt } from "../contexts/CourseAttemptContext.jsx";
 
 export default function ProtectedLayout() {
     const authContext = useAuth();
     const [employeeGroup, setEmployeeGroup] = useState(null);
+    const [courseAttempt, setCourseAttempt] = useState(null);
+    const [steps, setSteps] = useState([
+        { name: "Welcome", path: "/welcome", show: true },
+        { name: "Choose Course", path: "/course-select", show: true  },
+        { name: "Courseware", path: "/courseware", show: true  },
+        { name: "Assessment", path: "/assessment", show: true  },
+        { name: "Review", path: "/results", show: true  },
+        { name: "Feedback", path: "/feedback", show: true  },
+        { name: "Finish", path: "/finish", show: true  },
+    ]);
     const navigate = useNavigate();
     const location = useLocation();
+    const courseAttemptContext = useCourseAttempt();
 
     const getEmployeeGroup = async () => {
         try {
@@ -24,6 +36,26 @@ export default function ProtectedLayout() {
         getEmployeeGroup();
     }, []);
 
+    useEffect(() => {
+        if (courseAttemptContext.courseAttempt) {
+            const ca = courseAttemptContext.courseAttempt;
+    
+            // Create a new steps array to avoid direct mutation
+            const updatedSteps = steps.map((step, index) => {
+                if (index === 3) {
+                    return { ...step, show: ca.askAssessmentQuestions };
+                }
+                if (index === 5) {
+                    return { ...step, show: ca.askForFeedback };
+                }
+                return step;
+            });
+    
+            // Update the steps state with the new array
+            setSteps(updatedSteps);
+        }
+    }, [courseAttemptContext]);
+
     const handleLogout = () => {
         authContext.logout();
         navigate("/login");
@@ -32,16 +64,6 @@ export default function ProtectedLayout() {
     if (!employeeGroup) {
         return <LoadingBar />;
     }
-
-    const steps = [
-        { name: "Welcome", path: "/welcome" },
-        { name: "Choose Course", path: "/course-select" },
-        { name: "Courseware", path: "/courseware" },
-        { name: "Assessment", path: "/assessment" },
-        { name: "Review", path: "/results" },
-        { name: "Feedback", path: "/feedback" },
-        { name: "Finish", path: "/finish" },
-    ];
 
     return (
         <Container fluid className="d-flex flex-column vh-100 bg-white">
@@ -66,7 +88,7 @@ export default function ProtectedLayout() {
                 <Col lg={2} className="d-none d-lg-block mt-5 me-5">
                     <div className="nav-assistant">
                         <ul className="list-unstyled">
-                            {steps.map((step, index) => (
+                            {steps.filter(step => step.show).map((step, index) => (
                                 <li
                                     key={index}
                                     className={
