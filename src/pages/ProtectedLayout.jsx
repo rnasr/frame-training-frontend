@@ -24,7 +24,7 @@ export default function ProtectedLayout() {
 
     useEffect(() => {
         setEmployeeGroup(authContext.employeeGroup);
-    }, [authContext]);
+    }, [authContext.employeeGroup]);
 
     useEffect(() => {
         if (courseAttemptContext.courseAttempt) {
@@ -44,7 +44,7 @@ export default function ProtectedLayout() {
             // Update the steps state with the new array
             setSteps(updatedSteps);
         }
-    }, [courseAttemptContext]);
+    }, [courseAttemptContext.courseAttempt]);
 
     const handleLogout = () => {
         authContext.logout();

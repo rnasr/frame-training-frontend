@@ -18,7 +18,8 @@ export const AuthProvider = ({ children }) => {
             console.error(e);
         }
     };
-    useEffect(() => {
+
+    const loadState = async () => {
         const authStr = localStorage.getItem('authentication');
         if (authStr) {
             const auth = JSON.parse(authStr);
@@ -26,8 +27,12 @@ export const AuthProvider = ({ children }) => {
                 auth.username, auth.firstName, auth.lastName, auth.clientName, auth.clientId,
                 auth.role, auth.jwtToken, auth.refreshToken
             ));
-            getEmployeeGroup();
+            await getEmployeeGroup();
         }
+    };
+
+    useEffect(() => {
+        loadState();
     }, []);
 
     const signIn = async (username, password) => {
@@ -39,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         );
         setAuthentication(newAuth);
         localStorage.setItem('authentication', JSON.stringify(newAuth));
+        await getEmployeeGroup();
     };
 
     const refreshToken = async () => {

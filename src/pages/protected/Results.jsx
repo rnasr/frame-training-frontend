@@ -86,10 +86,7 @@ export default function Results() {
 									<p className="ms-1 my-4 fs-5">
 									You have completed this course
 									</p>
-									<Alert variant="info">
-										<p className="mt-3">To retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
-										<p className="mt-3">To review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
-									</Alert>
+									
 									<p>If the following information is correct, please click the button below to submit your assessment	results:</p>
 								</>
 							)}
@@ -98,10 +95,7 @@ export default function Results() {
 									<p className="ms-1 my-4 fs-5">
 									Sorry that you have not passed this course
 									</p>
-									<Alert variant="info">
-										<p className="mt-3">To retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
-										<p className="mt-3">To review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
-									</Alert>
+									
 								</>
 							)}
 							
@@ -126,27 +120,31 @@ export default function Results() {
 							</>
 						}
 						<p className="ms-1 my fs-6">A score of {courseAttempt.passingScore}% or more is considered a successful completion.</p>
-						<Alert variant="info">
-							<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
-							<p className="mt-3">If you wish to review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
-						</Alert>
-						<p>If the following information is correct, please click the button below to submit your assessment	results:</p>
+						
+						
 						</>
+					)}		
+					<Alert variant="info">
+						<p className="mt-3">If you wish to retake the assessment, <Link className="p-0" to="/assessment">click here</Link>.</p>
+						<p className="mt-3">If you wish to review specific components of the training before retaking the assessment, <Link className="p-0" to="/courseware">click here.</Link></p>
+					</Alert>		
+					{(courseAttempt.passed || (!courseAttempt.passed && courseAttempt.allowSubmissionOnFail)) && (
+						<>
+							<p>If the following information is correct, please click the button below to submit your assessment	results:</p>
+							<div className="mx-1 my-4">
+								{courseAttempt.firstName && <p><strong>First Name:</strong> {courseAttempt.firstName}</p>}
+								{courseAttempt.lastName && <p><strong>Last Name:</strong> {courseAttempt.lastName}</p>}
+								{courseAttempt.employeeNumber && <p><strong>Employee Number:</strong> {courseAttempt.employeeNumber}</p>}
+								{[...Array(10).keys()].map(i => (
+									courseAttempt[`otherFieldName${i + 1}`] && courseAttempt[`otherField${i + 1}`] && (
+										<p key={i}><strong>{courseAttempt[`otherFieldName${i + 1}`]}:</strong> {courseAttempt[`otherField${i + 1}`]}</p>
+									)
+								))}
+							</div>
+						</>
+						
 					)}
 					
-					
-					
-					
-					<div className="mx-1 my-4">
-                        {courseAttempt.firstName && <p><strong>First Name:</strong> {courseAttempt.firstName}</p>}
-                        {courseAttempt.lastName && <p><strong>Last Name:</strong> {courseAttempt.lastName}</p>}
-                        {courseAttempt.employeeNumber && <p><strong>Employee Number:</strong> {courseAttempt.employeeNumber}</p>}
-                        {[...Array(10).keys()].map(i => (
-                            courseAttempt[`otherFieldName${i + 1}`] && courseAttempt[`otherField${i + 1}`] && (
-                                <p key={i}><strong>{courseAttempt[`otherFieldName${i + 1}`]}:</strong> {courseAttempt[`otherField${i + 1}`]}</p>
-                            )
-                        ))}
-                    </div>
 				</>
 			)}
 			<Button className='mt-5 w-100' onClick={handleNext} disabled={disableNext()}>Submit Assessment Results and Continue</Button>

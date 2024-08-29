@@ -3,9 +3,11 @@ import { Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { courseApi } from "../../api/course.js";
 import {useAuth} from "../../contexts/AuthContext.jsx";
+import { useCourseAttempt } from "../../contexts/CourseAttemptContext.jsx";
 
 export default function Finish() {
     const navigate = useNavigate();
+    const caContext = useCourseAttempt();
     const authContext = useAuth();
     const courseAttemptId = sessionStorage.getItem('certificateCourseAttemptId');
     const employeeGroup = authContext.employeeGroup;
