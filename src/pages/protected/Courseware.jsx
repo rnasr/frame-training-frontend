@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Alert } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import 'scorm-again';
 
 import { courseApi } from "../../api/course.js";
 import { useCourseAttempt } from "../../contexts/CourseAttemptContext.jsx";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 
 export default function Courseware() {
 	const navigate = useNavigate();
-
-    const employeeGroup = useOutletContext();
+	const authContext = useAuth();
+    const employeeGroup = authContext.employeeGroup;
 	const courseAttemptId = sessionStorage.getItem('courseAttemptId');
 
 	const [coursewareUrl, setCoursewareUrl] = useState(null);
@@ -18,7 +19,7 @@ export default function Courseware() {
 	const [enableNext, setEnableNext] = useState(false);
 	const courseAttemptContext = useCourseAttempt();
 
-	const getCourseConfig = async () => {
+	const refreshCourseAttempt = async () => {
 		try {
 			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
 			courseAttemptContext.setCourseAttempt(courseAttempt);
@@ -46,7 +47,12 @@ export default function Courseware() {
 	};
 
 	useEffect(() => {
-		getCourseConfig();
+		if (courseAttemptId) {
+			refreshCourseAttempt();	
+		} else {
+			navigate("/course-select");
+		}
+		
 	}, []);
 
 	useEffect(() => {

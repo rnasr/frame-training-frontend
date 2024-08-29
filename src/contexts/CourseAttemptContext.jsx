@@ -30,14 +30,6 @@ export const CourseAttemptProvider = ({ children }) => {
         getCourseAttempt();
     }, []);
 
-    useEffect(() => {
-        if (!courseAttempt && pathsThatRequireCourseAttemptId.includes(window.location.pathname)) {
-            navigate("/course-select");
-            return null;
-        }
-    
-    }, [courseAttempt])
-
     const activeCourseAttempt = () => courseAttempt !== null;
 
     const clearCourseAttempt = () => {

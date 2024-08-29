@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form } from "react-bootstrap";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import * as formik from 'formik';
 import * as yup from 'yup';
 
 import { courseApi } from "../../api/course.js";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 
 export default function Welcome() {
     const { Formik } = formik;
     const navigate = useNavigate();
-    const employeeGroup = useOutletContext();
+    const authContext = useAuth();
+    const employeeGroup = authContext.employeeGroup;
     const [postLoginQuestions, setPostLoginQuestions] = useState([]);
     const [schema, setSchema] = useState(yup.object().shape({
         agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),

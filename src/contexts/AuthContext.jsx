@@ -2,12 +2,22 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {authApi} from "../api/auth.js";
 import {jwtDecode} from "jwt-decode";
+import { courseApi } from '../api/course.js';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [authentication, setAuthentication] = useState(null);
+    const [employeeGroup, setEmployeeGroup] = useState(null);
     const navigate = useNavigate();
 
+    const getEmployeeGroup = async () => {
+        try {
+            const group = await courseApi.getEmployeeGroup();
+            setEmployeeGroup(group);
+        } catch (e) {
+            console.error(e);
+        }
+    };
     useEffect(() => {
         const authStr = localStorage.getItem('authentication');
         if (authStr) {
@@ -16,6 +26,7 @@ export const AuthProvider = ({ children }) => {
                 auth.username, auth.firstName, auth.lastName, auth.clientName, auth.clientId,
                 auth.role, auth.jwtToken, auth.refreshToken
             ));
+            getEmployeeGroup();
         }
     }, []);
 
@@ -62,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ authentication, signIn, signedIn, refreshToken, logout }}>
+        <AuthContext.Provider value={{ authentication, signIn, signedIn, refreshToken, logout, employeeGroup, setEmployeeGroup }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,16 +1,14 @@
 import React from "react";
 import { Col, Button } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { courseApi } from "../../api/course.js";
 import {useAuth} from "../../contexts/AuthContext.jsx";
 
 export default function Finish() {
     const navigate = useNavigate();
-
     const authContext = useAuth();
     const courseAttemptId = sessionStorage.getItem('certificateCourseAttemptId');
-    const employeeGroup = useOutletContext();
-
+    const employeeGroup = authContext.employeeGroup;
     const getCertificate = async () => {
         try {
             await courseApi.getCertificate(courseAttemptId);

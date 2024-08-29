@@ -8,8 +8,7 @@ import { useCourseAttempt } from "../contexts/CourseAttemptContext.jsx";
 
 export default function ProtectedLayout() {
     const authContext = useAuth();
-    const [employeeGroup, setEmployeeGroup] = useState(null);
-    const [courseAttempt, setCourseAttempt] = useState(null);
+    const [employeeGroup, setEmployeeGroup] = useState(authContext.employeeGroup);
     const [steps, setSteps] = useState([
         { name: "Welcome", path: "/welcome", show: true },
         { name: "Choose Course", path: "/course-select", show: true  },
@@ -23,18 +22,9 @@ export default function ProtectedLayout() {
     const location = useLocation();
     const courseAttemptContext = useCourseAttempt();
 
-    const getEmployeeGroup = async () => {
-        try {
-            const group = await courseApi.getEmployeeGroup();
-            setEmployeeGroup(group);
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
     useEffect(() => {
-        getEmployeeGroup();
-    }, []);
+        setEmployeeGroup(authContext.employeeGroup);
+    }, [authContext]);
 
     useEffect(() => {
         if (courseAttemptContext.courseAttempt) {

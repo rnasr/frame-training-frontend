@@ -25,7 +25,12 @@ export default function Assessment() {
     };
 
     useEffect(() => {
-        getAssessmentQuestions();
+        if (courseAttemptId) {
+			getAssessmentQuestions();	
+		} else {
+			navigate("/course-select");
+		}
+        
     }, []);
 
     const validationSchema = yup.object().shape(
