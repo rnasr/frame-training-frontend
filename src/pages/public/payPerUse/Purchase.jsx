@@ -80,6 +80,13 @@ export default function Purchase() {
                                         <td>${item.total.toFixed(2)}</td>
                                     </tr>
                                 ))}
+                                {orderDetails.taxes?.map((tax, index) => (
+                                    <tr>
+                                        <td colSpan="3"><strong>${tax.taxName}</strong>(${tax.taxPercent * 100}%)</td>
+                                        <td><strong>${tax.taxAmount.toFixed(2)}</strong></td>
+                                    </tr>
+                                ))}
+                                
                                 <tr>
                                     <td colSpan="3"><strong>Total</strong></td>
                                     <td><strong>${orderDetails.total.toFixed(2)}</strong></td>
@@ -156,7 +163,7 @@ function PaymentForm({ paymentIntent, onPaymentComplete }) {
             {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
             {success && <Alert variant="success" className="mt-3">Payment successful!</Alert>}
             <PaymentElement options={paymentElementOptions} />
-            <Button type="submit" className="mt-3" variant="primary" disabled={!stripe}>
+            <Button type="submit" className="mt-3" variant="primary" disabled={!stripe || submitting}>
                 <i class="bi bi-credit-card me-2"></i>
                 Pay Now ${paymentIntent.amount / 100}
             </Button>
