@@ -82,7 +82,7 @@ export default function Purchase() {
                                 ))}
                                 {orderDetails.taxes?.map((tax, index) => (
                                     <tr>
-                                        <td colSpan="3"><strong>${tax.taxName}</strong>(${tax.taxPercent * 100}%)</td>
+                                        <td colSpan="3"><strong>{tax.taxName}</strong>({tax.taxPercent * 100}%)</td>
                                         <td><strong>${tax.taxAmount.toFixed(2)}</strong></td>
                                     </tr>
                                 ))}
