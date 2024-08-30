@@ -57,59 +57,63 @@ export default function Purchase() {
 
     return (
         <PayPerUseHeader>
-            <Row className="p-5 bg-light border rounded-3 m-5 shadow">
-                <h1 className="mb-4">Purchase Summary</h1>
                 {orderDetails && regData ? (
+            // <Row className="p-5 m-5">
+            <Row className="p-5 bg-light border rounded-3 m-5 shadow">
+                <h4 className="text-center w-100 border p-2  bg-info text-white">Order Information</h4>
                     <>
-                        <h2>Order Items</h2>
-                        <Table striped bordered hover className="mb-4">
+                        {/* <h2>Order Items</h2> */}
+                        <table className="mb-4 bg-white">
                             <thead>
                                 <tr>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
+                                    <th className="px-4 py-2 border-bottom bg-secondary">Item</th>
+                                    <th className="px-4 py-2 text-end border-bottom bg-secondary">Qty</th>
+                                    <th className="px-4 py-2 text-end border-bottom bg-secondary">Price</th>
+                                    <th className="px-4 py-2 text-start border-bottom bg-secondary">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {orderDetails.orderItems.map((item, index) => (
                                     <tr key={index}>
-                                        <td>{item.itemName}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>${item.price.toFixed(2)}</td>
-                                        <td>${item.total.toFixed(2)}</td>
+                                        <td className="p-4 border-bottom">{item.itemName}</td>
+                                        <td className="p-4 text-end border-bottom">{item.quantity}</td>
+                                        <td className="p-4 text-end border-bottom">${item.price.toFixed(2)}</td>
+                                        <td className="p-4 text-start border-bottom">${item.total.toFixed(2)}</td>
                                     </tr>
                                 ))}
                                 {orderDetails.taxes?.map((tax, index) => (
                                     <tr>
-                                        <td colSpan="3"><strong>{tax.taxName}</strong>({tax.taxPercent * 100}%)</td>
-                                        <td><strong>${tax.taxAmount.toFixed(2)}</strong></td>
+                                        <td colSpan="3" className="p-4 text-end bg-light"><strong>{tax.taxName}</strong> ({tax.taxPercent * 100}%)</td>
+                                        <td className="p-4 text-start bg-light"><strong>${tax.taxAmount.toFixed(2)}</strong></td>
                                     </tr>
                                 ))}
                                 
                                 <tr>
-                                    <td colSpan="3"><strong>Total</strong></td>
-                                    <td><strong>${orderDetails.total.toFixed(2)}</strong></td>
+                                    <td colSpan="3" className="px-4 text-end bg-light"><strong>Total</strong></td>
+                                    <td className="px-4 text-start bg-light"><strong>${orderDetails.total.toFixed(2)}</strong></td>
                                 </tr>
                             </tbody>
-                        </Table>
+                        </table>
 
-                        <h2>Purchaser Information</h2>
-                        <ListGroup className="mb-4">
-                            <ListGroup.Item><strong>Name:</strong> {`${regData.firstName} ${regData.lastName}`}</ListGroup.Item>
+                        <h4 className="text-center w-100 border p-2 mt-5 bg-info text-white">Purchaser Information</h4>
+                        <ListGroup className="mb-4 bg-light">
+                            <ListGroup.Item className="bg-light"><strong>Name:</strong> {`${regData.firstName} ${regData.lastName}`}</ListGroup.Item>
                             <ListGroup.Item><strong>Email:</strong> {regData.email}</ListGroup.Item>
                             <ListGroup.Item><strong>Address:</strong> {`${regData.address}, ${regData.city}, ${regData.province}, ${regData.country}, ${regData.postalCode}`}</ListGroup.Item>
                         </ListGroup>
 
-                        <h2>Payment</h2>
+                        <h4 className="text-center w-100 border p-2 mt-5 bg-info text-white">Payment</h4>
                         <Elements stripe={stripePromise} options={{ clientSecret: orderDetails.paymentIntent.clientSecret }}>
                             <PaymentForm paymentIntent={orderDetails.paymentIntent} onPaymentComplete={onPaymentCompleted} />
                         </Elements>
                     </>
-                ) : (
-                    <LoadingBar/>
-                )}
             </Row>
+                ) : (
+                    <Row className="p-5 bg-white border rounded-3 m-5 shadow text-center">
+                        <h5 className="mb-5 fs-6">Creating Order Summary</h5>
+                        <LoadingBar/>
+                    </Row>
+                )}
         </PayPerUseHeader>
     );
 }
@@ -163,10 +167,12 @@ function PaymentForm({ paymentIntent, onPaymentComplete }) {
             {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
             {success && <Alert variant="success" className="mt-3">Payment successful!</Alert>}
             <PaymentElement options={paymentElementOptions} />
-            <Button type="submit" className="mt-3" variant="primary" disabled={!stripe || submitting}>
+            <Row className="d-flex justify-content-center mt-3">
+            <Button type="submit" className="mt-3 w-50 p-2" variant="primary" disabled={!stripe || submitting}>
                 <i class="bi bi-credit-card me-2"></i>
                 Pay Now ${paymentIntent.amount / 100}
             </Button>
+            </Row>
         </form>
     );
 }
