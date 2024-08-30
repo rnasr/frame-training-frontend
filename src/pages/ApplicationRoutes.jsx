@@ -22,6 +22,8 @@ import Results from './protected/Results.jsx';
 import Feedback from './protected/Feedback.jsx';
 import Finish from './protected/Finish.jsx';
 import { CourseAttemptProvider } from '../contexts/CourseAttemptContext.jsx';
+import { RegistrationProvider } from '../contexts/RegistrationContext.jsx';
+import PaymentComplete from './public/payPerUse/PaymentComplete.jsx';
 
 function ApplicationRoutes() {
     const authContext = useAuth();
@@ -65,6 +67,11 @@ function ApplicationRoutes() {
                 path="/register/purchase"
                 element={<Purchase />}
             />
+            <Route
+                path="/register/complete"
+                element={<PaymentComplete />}
+            />
+            
 
             {/* Protected routes */}
             {authContext.signedIn() && (
@@ -96,7 +103,9 @@ const RequireAuth = ({ children }) => {
 export default () => (
     <AuthProvider>
         <CourseAttemptProvider>
-            <ApplicationRoutes />
+            <RegistrationProvider>
+                <ApplicationRoutes />
+            </RegistrationProvider>        
         </CourseAttemptProvider>        
     </AuthProvider>
 );

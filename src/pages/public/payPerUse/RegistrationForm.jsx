@@ -3,11 +3,13 @@ import { Row, Col, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as formik from 'formik';
 import * as yup from 'yup';
+import { useRegistration } from '../../../contexts/RegistrationContext';
 
 export default function RegistrationForm({ sortedCourses }) {
 
     const { Formik } = formik;
     const navigate = useNavigate();
+    const registrationContext = useRegistration();
 
     const initialValues = {
         firstName: '',
@@ -18,7 +20,7 @@ export default function RegistrationForm({ sortedCourses }) {
         province: '',
         country: 'Canada',
         postalCode: '',
-        courseQuantities: [],
+        courseQuantities: {},
     };
 
     const validationSchema = yup.object().shape({
@@ -30,13 +32,25 @@ export default function RegistrationForm({ sortedCourses }) {
         province: yup.string().required('Province is required'),
         postalCode: yup.string().required('Postal Code is required'),
         country: yup.string().required('Country is required'),
+        company: yup.string()
     });
 
     const handleSubmit = (values) => {
-        sessionStorage.setItem('registrationData', JSON.stringify(values));
+        const selectedCourses = Object.entries(values.courseQuantities)
+            .filter(([_, details]) => details.selected)
+            .map(([courseId, details]) => ({
+                courseId: parseInt(courseId),
+                quantity: details.quantity
+            }));
+        
+        const finalValues = {
+            ...values,
+            courseQuantities: selectedCourses,
+        };
+
+        sessionStorage.setItem('registrationData', JSON.stringify(finalValues));
         navigate("/register/purchase"); 
     };
-
     return (
         <Formik
             initialValues={initialValues}
@@ -76,6 +90,21 @@ export default function RegistrationForm({ sortedCourses }) {
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.lastName}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Company</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="company"
+                                    value={values.company}
+                                    onChange={handleChange}
+                                    isInvalid={touched.company && !!errors.company}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.company}
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
@@ -197,9 +226,9 @@ export default function RegistrationForm({ sortedCourses }) {
                                             <Form.Check
                                                 type="checkbox"
                                                 label={course.displayName}
-                                                name="courseQuantities"
-                                                value={course.id}
+                                                name={`courseQuantities.${course.id}.selected`}
                                                 onChange={handleChange}
+                                                checked={values.courseQuantities[course.id]?.selected || false}
                                             />
                                         </Col>
                                         <Col>${course.price}</Col>
@@ -207,15 +236,15 @@ export default function RegistrationForm({ sortedCourses }) {
                                             <Form.Control
                                                 type="number"
                                                 min="0"
-                                                name={`courseQuantities.${course.id}`}
-                                                className="ms-2"
+                                                name={`courseQuantities.${course.id}.quantity`}
+                                                value={values.courseQuantities[course.id]?.quantity || 0}
                                                 onChange={handleChange}
                                                 style={{ width: '60px' }}
+                                                disabled={!values.courseQuantities[course.id]?.selected}
                                             />
                                         </Col>
                                         <Col>
-                                            {/* Assuming you have a function to calculate the total */}
-                                            ${(course.price * (values.courseQuantities?.[course.id] || 0)).toFixed(2)}
+                                            ${(course.price * (values.courseQuantities[course.id]?.quantity || 0)).toFixed(2)}
                                         </Col>
                                     </Row>
                                 ))}

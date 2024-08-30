@@ -7,9 +7,10 @@ const getPpuCourses = async () => {
 }
 
 /* Get details needed for the payment page */
-const getPaymentPageDetails = async (values) => {
-    const data = JSON.stringify(values);
-    return axios.post('PayPerUse/paymentPage', data, {headers: authHeader()}).then(response => response.data.result);
+const getPaymentPageDetails = async (courseQuantities, country) => {
+    const data = JSON.stringify({courseQuantities, country});
+    const response = await axios.post('PayPerUse/paymentPage', data, {headers: authHeader()});
+    return response.data;
 }
 
 /* Complete the order after a successful payment */
