@@ -105,7 +105,7 @@ export default function ProtectedLayout() {
 
                 {/* Course Main Outlet */}
                 <Col md={8} lg={6} xs={12} className="d-flex justify-content-center">
-                    <div className="shadow rounded-3 bg-light p-5 border">
+                    <div className="shadow rounded-3 bg-light p-5 border w-100">
                         <Outlet context={employeeGroup} />
                     </div>
                 </Col>
