@@ -1,9 +1,16 @@
 name: Deploy Prod
 
 on:
-  push:
-    branches:
-      - "main"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment to deploy'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+    
 
 jobs:
   build:
