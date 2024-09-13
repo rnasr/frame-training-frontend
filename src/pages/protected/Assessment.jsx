@@ -25,7 +25,12 @@ export default function Assessment() {
     };
 
     useEffect(() => {
-        getAssessmentQuestions();
+        if (courseAttemptId) {
+			getAssessmentQuestions();	
+		} else {
+			navigate("/course-select");
+		}
+        
     }, []);
 
     const validationSchema = yup.object().shape(
@@ -138,7 +143,7 @@ export default function Assessment() {
                                     </Row>
                                 )}
 
-                                <Form.Control.Feedback type="invalid">
+                                <Form.Control.Feedback type="invalid" className="d-block ms-5">
                                     {errors[question.id]}
                                 </Form.Control.Feedback>
                             </Form.Group>

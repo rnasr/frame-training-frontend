@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Alert, Row, Col, Button, Form } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as formik from 'formik';
 
 import { courseApi } from "../../api/course.js";
+import { useAuth } from "../../contexts/AuthContext.jsx";
+import { useCourseAttempt } from "../../contexts/CourseAttemptContext.jsx";
 
 export default function Feedback() {
     const { Formik } = formik;   
     const navigate = useNavigate();
-
-    const employeeGroup = useOutletContext();
+    const authContext = useAuth();
+    const caContext = useCourseAttempt();
+    const employeeGroup = authContext.employeeGroup;
     const courseId = sessionStorage.getItem('courseId');
     
     const [feedbackQuestions, setFeedbackQuestions] = useState([]);
@@ -50,7 +53,12 @@ export default function Feedback() {
     };
     
     useEffect(() => {
-        getFeedbackQuestions();
+        if (caContext.courseAttempt){
+            getFeedbackQuestions();
+        } else {
+            navigate("/course-select");
+        }
+        
     }, []);
 
     return (

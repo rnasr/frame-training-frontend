@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form } from "react-bootstrap";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import * as formik from 'formik';
 import * as yup from 'yup';
 
 import { courseApi } from "../../api/course.js";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 
 export default function Welcome() {
     const { Formik } = formik;
     const navigate = useNavigate();
-    const employeeGroup = useOutletContext();
+    const authContext = useAuth();
+    const employeeGroup = authContext.employeeGroup;
     const [postLoginQuestions, setPostLoginQuestions] = useState([]);
     const [schema, setSchema] = useState(yup.object().shape({
         agreed: yup.boolean().oneOf([true], 'You must agree to continue').required(),
@@ -97,24 +99,34 @@ export default function Welcome() {
                                     <Form.Group controlId={question.fieldToPopulate}>
                                         <Form.Label>{question.question}</Form.Label>
                                         {question.type === 'text' && (
-                                            <Form.Control
-                                                type="text"
-                                                name={question.fieldToPopulate}
-                                                value={values[question.fieldToPopulate]}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors[question.fieldToPopulate]}
-                                                placeholder={question.description}
-                                            />
+                                            <>
+                                                <Form.Control
+                                                    type="text"
+                                                    name={question.fieldToPopulate}
+                                                    value={values[question.fieldToPopulate]}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors[question.fieldToPopulate]}
+                                                    placeholder={question.description}
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[question.fieldToPopulate]}
+                                                </Form.Control.Feedback>
+                                            </>
                                         )}
                                         {question.type === 'numeric' && (
-                                            <Form.Control
-                                                type="number"
-                                                name={question.fieldToPopulate}
-                                                value={values[question.fieldToPopulate]}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors[question.fieldToPopulate]}
-                                                placeholder={question.description}
-                                            />
+                                            <>
+                                                <Form.Control
+                                                    type="number"
+                                                    name={question.fieldToPopulate}
+                                                    value={values[question.fieldToPopulate]}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors[question.fieldToPopulate]}
+                                                    placeholder={question.description}
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors[question.fieldToPopulate]}
+                                                </Form.Control.Feedback>
+                                            </>
                                         )}
                                         {question.type === 'yesno' && (
                                             <>
@@ -136,41 +148,51 @@ export default function Welcome() {
                                                     onChange={handleChange}
                                                     isInvalid={!!errors[question.fieldToPopulate]}
                                                 />
+                                                {errors[question.fieldToPopulate] && (
+                                                    <Form.Control.Feedback type="invalid" className="d-block">
+                                                        {errors[question.fieldToPopulate]}
+                                                    </Form.Control.Feedback>
+                                                )}
                                             </>
                                         )}
                                         {question.type === 'options' && (
-                                            question.options.map(option => (
-                                                <Form.Check
-                                                    type="radio"
-                                                    label={option}
-                                                    name={question.fieldToPopulate}
-                                                    value={option}
-                                                    checked={values[question.fieldToPopulate] === option}
-                                                    onChange={handleChange}
-                                                    isInvalid={!!errors[question.fieldToPopulate]}
-                                                    key={option}
-                                                />
-                                            ))
+                                            <>
+                                                {question.options.map(option => (
+                                                    <Form.Check
+                                                        type="radio"
+                                                        label={option}
+                                                        name={question.fieldToPopulate}
+                                                        value={option}
+                                                        checked={values[question.fieldToPopulate] === option}
+                                                        onChange={handleChange}
+                                                        isInvalid={!!errors[question.fieldToPopulate]}
+                                                        key={option}
+                                                    />
+                                                ))}
+                                                {errors[question.fieldToPopulate] && (
+                                                    <Form.Control.Feedback type="invalid" className="d-block">
+                                                        {errors[question.fieldToPopulate]}
+                                                    </Form.Control.Feedback>
+                                                )}
+                                            </>
                                         )}
-                                        <Form.Control.Feedback type="invalid">
-                                            {errors[question.fieldToPopulate]}
-                                        </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                             ))}
                         </Row>
-                        <Form.Check
-                            className="mb-3 p-5"
-                            type="checkbox" 
-                            label={<span>I agree to this website's <Link to="/terms" target="_blank">Terms of Use</Link> and <Link to="/privacy" target="_blank">Privacy Policy</Link>.</span>}
-                            name="agreed"
-                            checked={values.agreed}
-                            onChange={handleChange}
-                            isInvalid={!!errors.agreed}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.agreed}
-                        </Form.Control.Feedback>
+                        <Form.Group controlId="agreed" className="mb-3 p-5">
+                            <Form.Check
+                                type="checkbox"
+                                label={<span>I agree to this website's <Link to="/terms" target="_blank">Terms of Use</Link> and <Link to="/privacy" target="_blank">Privacy Policy</Link>.</span>}
+                                name="agreed"
+                                checked={values.agreed}
+                                onChange={handleChange}
+                                isInvalid={!!errors.agreed}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.agreed}
+                            </Form.Control.Feedback>
+                        </Form.Group>
                         <Button className="w-100" type="submit" disabled={!values.agreed}>
                             Continue to Course Selection
                         </Button>

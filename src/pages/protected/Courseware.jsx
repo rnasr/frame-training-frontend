@@ -1,35 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Alert } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import 'scorm-again';
 
 import { courseApi } from "../../api/course.js";
+import { useCourseAttempt } from "../../contexts/CourseAttemptContext.jsx";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 
 export default function Courseware() {
 	const navigate = useNavigate();
-
-    const employeeGroup = useOutletContext();
+	const authContext = useAuth();
+    const employeeGroup = authContext.employeeGroup;
 	const courseAttemptId = sessionStorage.getItem('courseAttemptId');
 
 	const [coursewareUrl, setCoursewareUrl] = useState(null);
 	const [courseCompleted, setCourseCompleted] = useState(false);
+	const [nextPage, setNextPage] = useState('');
 	const [enableNext, setEnableNext] = useState(false);
+	const courseAttemptContext = useCourseAttempt();
 
-	const getCoursewareUrl = async () => {
+	const refreshCourseAttempt = async () => {
 		try {
 			const courseAttempt = await courseApi.getCourseAttempt(courseAttemptId);
+			courseAttemptContext.setCourseAttempt(courseAttempt);
 			setCoursewareUrl(courseAttempt.courseLaunchUrl);
-			console.log(response.courseLaunchUrl);
+			if (courseAttempt.askAssessmentQuestions) {
+				setNextPage("/assessment");
+			} else {
+				setNextPage("/results");
+			}
 		} catch (e) {
 			console.error(e);
 		}
 	};
+
+	const completeCourseAttempt = async () => {
+		try {
+			await courseApi.completeCourseAttempt(courseAttemptId);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+	
 	const handleNext = () => {
-		navigate("/assessment");
+		navigate(nextPage);
 	};
 
 	useEffect(() => {
-		getCoursewareUrl();
+		if (courseAttemptId) {
+			refreshCourseAttempt();	
+		} else {
+			navigate("/course-select");
+		}
+		
 	}, []);
 
 	useEffect(() => {
@@ -100,7 +123,7 @@ export default function Courseware() {
 				<p className="ms-1 my-4">Once you have finished, click the button below to go to the Assessment section.</p>
 			</Alert>
 
-			<Button className='mt-5 w-100' onClick={handleNext} disabled={!enableNext}>{enableNext ? "Go to Assessment" : "You must complete the course to continue."}</Button>
+			<Button className='mt-5 w-100' onClick={handleNext} disabled={!enableNext}>{enableNext ? "Proceed to next section" : "You must complete the course to continue."}</Button>
 		</Col>
 	);
 }
