@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 import { courseApi } from "../../api/course.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import PLQOptionQuestion from "../../components/PLQOptionQuestion.jsx";
 
 export default function Welcome() {
     const { Formik } = formik;
@@ -156,25 +157,8 @@ export default function Welcome() {
                                             </>
                                         )}
                                         {question.type === 'options' && (
-                                            <>
-                                                {question.options.map(option => (
-                                                    <Form.Check
-                                                        type="radio"
-                                                        label={option}
-                                                        name={question.fieldToPopulate}
-                                                        value={option}
-                                                        checked={values[question.fieldToPopulate] === option}
-                                                        onChange={handleChange}
-                                                        isInvalid={!!errors[question.fieldToPopulate]}
-                                                        key={option}
-                                                    />
-                                                ))}
-                                                {errors[question.fieldToPopulate] && (
-                                                    <Form.Control.Feedback type="invalid" className="d-block">
-                                                        {errors[question.fieldToPopulate]}
-                                                    </Form.Control.Feedback>
-                                                )}
-                                            </>
+                                            <PLQOptionQuestion options={question.options} question={question} values={values} handleChange={(evt) => {console.log(evt); handleChange(evt);}} errors={errors} />
+                                            
                                         )}
                                     </Form.Group>
                                 </Col>

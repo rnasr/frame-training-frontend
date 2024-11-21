@@ -17,10 +17,14 @@ $border-radius: 0.35rem;
 $border-radius-lg: 1rem;
 $border-radius-sm: 0.2rem;
 
-input {
+input, select {
     outline-color: $secondary;
     outline-style: solid;
     outline-width: 2px;
   }
-
+  
+/* put this in so for typeahead to not show outline inside the input */
+input.rbt-input-hint {
+  outline: none;
+}
 @import 'node_modules/bootstrap/scss/bootstrap.scss';
