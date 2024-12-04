@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button, Form } from 'react-bootstrap';
+import { Row, Col, Button, Form, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as formik from 'formik';
 import * as yup from 'yup';
@@ -32,7 +32,31 @@ export default function RegistrationForm({ sortedCourses }) {
         province: yup.string().required('Province is required'),
         postalCode: yup.string().required('Postal Code is required'),
         country: yup.string().required('Country is required'),
-        company: yup.string()
+        company: yup.string(),
+        courseQuantities: yup
+        .object()
+        .test(
+            'at-least-one-course',
+            'At least one course must have a quantity greater than 0 if selected.',
+            (courseQuantities) => {
+                if (!courseQuantities) return false;
+                // Ensure at least one course is selected and its quantity > 0
+                return Object.values(courseQuantities).some(
+                    (course) => course.selected && course.quantity > 0
+                );
+            }
+        )
+        .test(
+            'selected-course-quantity',
+            'Selected courses must have a quantity greater than 0.',
+            (courseQuantities) => {
+                if (!courseQuantities) return false;
+                // Ensure all selected courses have a quantity > 0
+                return Object.values(courseQuantities).every(
+                    (course) => !course.selected || course.quantity > 0
+                )                
+            }
+        ),
     });
 
     const handleSubmit = (values) => {
@@ -57,7 +81,7 @@ export default function RegistrationForm({ sortedCourses }) {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
         >
-            {({ handleSubmit, handleChange, values, errors, touched }) => (
+            {({ handleSubmit, handleChange, setFieldValue, values, errors, touched }) => (
                 <Form onSubmit={handleSubmit}>
                     <Row className="px-5 py-3 bg-light border rounded-3 shadow w-50 m-auto">
                         <h4 className="mb-3 border-bottom py-3">Course Registration</h4>
@@ -159,7 +183,7 @@ export default function RegistrationForm({ sortedCourses }) {
 
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Province*</Form.Label>
+                                <Form.Label>Province/State*</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="province"
@@ -184,6 +208,7 @@ export default function RegistrationForm({ sortedCourses }) {
                                     isInvalid={touched.country && !!errors.country}
                                 >
                                     <option value="Canada">Canada</option>
+                                    <option value="US">US</option>
                                     {/* Add other countries as options if needed */}
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
@@ -194,7 +219,7 @@ export default function RegistrationForm({ sortedCourses }) {
 
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Postal Code*</Form.Label>
+                                <Form.Label>Postal/Zip Code*</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="postalCode"
@@ -210,7 +235,13 @@ export default function RegistrationForm({ sortedCourses }) {
                     </Row>
 
                     {/* Course List */}
+                    {/* Display the error for courseQuantities */}
+                    
                     <Row className="px-5 py-3 bg-light border rounded-3 shadow w-50 mx-auto mt-5">
+                                            {/* Display the error for courseQuantities */}
+                        {touched.courseQuantities && errors.courseQuantities && (
+                            <div className="text-danger">{errors.courseQuantities}</div>
+                        )}
                         {Object.entries(sortedCourses).map(([category, courses]) => (
                             <Col key={category} md={12} className="mb-4">
                                 <h4 className="mb-3 border-bottom py-3">{category}</h4>
@@ -227,19 +258,21 @@ export default function RegistrationForm({ sortedCourses }) {
                                                 type="checkbox"
                                                 label={course.displayName}
                                                 name={`courseQuantities.${course.id}.selected`}
-                                                onChange={handleChange}
+                                                onChange={(e) => {
+                                                    setFieldValue(`courseQuantities.${course.id}.selected`, e.target.checked);
+                                                }}
                                                 checked={values.courseQuantities[course.id]?.selected || false}
                                             />
                                         </Col>
                                         <Col>${course.price}</Col>
-                                        <Col>
+                                        <Col xs={2}>
                                             <Form.Control
                                                 type="number"
                                                 min="0"
                                                 name={`courseQuantities.${course.id}.quantity`}
-                                                value={values.courseQuantities[course.id]?.quantity || 0}
+                                                value={values.courseQuantities[course.id]?.quantity}
                                                 onChange={handleChange}
-                                                style={{ width: '60px' }}
+                                                style={{ width: '100%' }}
                                                 disabled={!values.courseQuantities[course.id]?.selected}
                                             />
                                         </Col>
@@ -250,6 +283,10 @@ export default function RegistrationForm({ sortedCourses }) {
                                 ))}
                             </Col>
                         ))}
+                        {/* Display the error for courseQuantities */}
+                        {touched.courseQuantities && errors.courseQuantities && (
+                            <div className="text-danger">{errors.courseQuantities}</div>
+                        )}
                     </Row>
                     <Row className="d-flex justify-content-center mx-auto w-50">
                         <Button type="submit" className="mt-5 mb-5">Continue</Button>
