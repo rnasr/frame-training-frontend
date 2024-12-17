@@ -25,7 +25,6 @@ export default function CourseSelect() {
                 courseId: id
             });
             if (response) {
-                sessionStorage.removeItem('userInfo');
                 sessionStorage.setItem('courseAttemptId', response);
                 sessionStorage.setItem('courseId', id);
                 handleNext();
