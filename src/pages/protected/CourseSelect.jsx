@@ -63,7 +63,7 @@ export default function CourseSelect() {
                             key={course.courseId}
                             disabled={course.payPerUse && course.availableCredits <= 0}
                         >
-                            {course.courseName}
+                            {course.displayName}
                         </Button>
                         {/* display status of credits and a warning if credits are depleted */}
                         {course.payPerUse && course.availableCredits <= 0 && (
