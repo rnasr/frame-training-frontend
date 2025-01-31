@@ -24,6 +24,7 @@ import Finish from './protected/Finish.jsx';
 import { CourseAttemptProvider } from '../contexts/CourseAttemptContext.jsx';
 import { RegistrationProvider } from '../contexts/RegistrationContext.jsx';
 import PaymentComplete from './public/payPerUse/PaymentComplete.jsx';
+import Logoff from './public/Logoff.jsx';
 
 function ApplicationRoutes() {
     const authContext = useAuth();
@@ -50,6 +51,10 @@ function ApplicationRoutes() {
                         <Login />
                     </PublicLayout>
                 }
+            />
+            <Route 
+                path="/logoff"
+                element={<Logoff />}
             />
             <Route
                 path="/terms"
