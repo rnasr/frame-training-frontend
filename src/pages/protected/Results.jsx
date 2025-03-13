@@ -12,6 +12,9 @@ export default function Results() {
 	const [passingScore, setPassingScore] = useState(null);
 	const [score, setScore] = useState(null);
 	const courseAttempt = courseAttemptContext.courseAttempt;
+	const authContext = useAuth();
+	const passMessage = authContext.employeeGroup.passMessage;
+	const failMessage = authContext.employeeGroup.failMessage;
 	
 	//Get current state of course attempt
 	const refreshCourseAttempt = async () => {
@@ -74,7 +77,7 @@ export default function Results() {
 					{courseAttempt.passed && (
 						<>
 							<p className="ms-1 my-4 fs-5">
-							Congratulations! You have completed this course.
+							{passMessage ? passMessage : "Congratulations! You have completed this course."}
 							</p>
 
 						</>
@@ -93,7 +96,7 @@ export default function Results() {
 							{!courseAttempt.allowSubmissionOnFail && (
 								<>
 									<p className="ms-1 my-4 fs-5">
-									Sorry that you have not passed this course
+									{failMessage ? failMessage : "Sorry that you have not passed this course"}
 									</p>
 									
 								</>
